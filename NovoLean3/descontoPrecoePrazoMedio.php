@@ -144,6 +144,7 @@ while ( ! $rs->EOF ) {
 		$valorLiquido = $fld2 [13]->value;
 		$vendedor = $fld2 [14]->value;
 		$precoMedio = $valorLiquido/$quantidadeItens;
+		$mesPorExtenso = retornaMesPorExtenso($mes);
 		
 		$prazoMedioTotal += $prazoMedio;
 		$descontoMedioTotal += $descontoMedio;
@@ -158,9 +159,6 @@ while ( ! $rs->EOF ) {
 		if (empty ( $filial2 ) || ($filial2 != $filial)) {
 			if ($filial == '0101') {
 					echo "<tr><th colspan = '16' bgcolor = '#5bc0de'>Pradolux</th></tr>";
-					echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
-					echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
-					echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 					
 
 			} else {
@@ -197,14 +195,14 @@ while ( ! $rs->EOF ) {
 					echo "<th>".number_format(($precoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
 				
 					echo "<tr><th colspan = '16' bgcolor = '#d9534f'>Luxparts</th></tr>";
-					echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
-					echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
-					echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 			}
 		}
 		
 		if (empty ( $mes2 ) || ($mes2 != $mes)) {
-			echo "<tr><th colspan = '16' bgcolor = '#999'>$mes de $ano</th></tr>";
+			echo "<tr><th colspan = '16' bgcolor = '#999'>$mesPorExtenso de $ano</th></tr>";
+			echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
+			echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
+			echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 		}
 		$filial2 = $filial;
 		$mes2 = $mes;
