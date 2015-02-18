@@ -8,7 +8,9 @@
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="css/bootstrap-datepicker.css" rel="stylesheet">
+    <script src="js/jquery-1.11.2.min.js"></script>
+   
   </head>
   <body>
  
@@ -26,16 +28,9 @@ include 'funcoes.php';
 	<header class="container-fluid">
 		<div class="row-fluid">
 			<div class="span12">
-				<div class="navbar">
-					<div class="navbar-inner">
-						<div class="span3">
-							<div class="container">
-								<h3>Gerenciador de Dados Lean</h3>
-								<p></p>
-							</div>
-						</div>
-					</div>
-				</div>
+								<div class='well'>
+									<h2>Gerenciador de Dados Lean</h2>
+								</div>
 			</div>
 		</div>
 	</header>
@@ -52,9 +47,7 @@ include 'funcoes.php';
 		</div>
 	</div>
 
-
-
-	<script>
+	    	<script>
 			document.write('<script src=' + ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') + '.js></script>
 
 	<script src="js/foundation.min.js"></script>
@@ -69,5 +62,8 @@ include 'funcoes.php';
     <script src="js/jquery-1.11.2.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+	
+
   </body>
 </html>

@@ -16,7 +16,7 @@ $data = $_POST ['dia'];
 
 // Combobox da data
 
-$instrucaoSQL = "	SELECT TOP 10 D3.D3_EMISSAO FROM SD3010 D3
+$instrucaoSQL = "	SELECT TOP 10 D3.D3_EMISSAO FROM SD3010 D3 WITH (NOLOCK)
 		
 					WHERE D3.D3_LOCAL = 'INJ-TR'
 					AND D3.D3_TM = '010'

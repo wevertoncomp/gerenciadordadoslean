@@ -47,4 +47,23 @@ echo "<td>". number_format ($produtividadeTotal*100, 2, '.', '' ) ." %</td></tfo
 $rs->Close ();
 $rs = null;
 }
+
+
+function retornaMesPorExtenso($MES){
+	switch ($MES) {
+		case 1 : $MES='Janeiro'; break;
+		case 2 : $MES='Fevereiro';    break;
+		case 3 : $MES='Março';    break;
+		case 4 : $MES='Abril';    break;
+		case 5 : $MES='Maio';    break;
+		case 6 : $MES='Junho';    break;
+		case 7 : $MES='Julho';    break;
+		case 8 : $MES='Agosto';    break;
+		case 9 : $MES='Setembro'; break;
+		case 10 : $MES='Outubro'; break;
+		case 11 : $MES='Novembro';    break;
+		case 12 : $MES='Dezembro'; break;
+	}
+	return $MES;
+}
 ?>
