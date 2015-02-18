@@ -2,7 +2,7 @@
 // ob_end_flush();
 $conn->open ( $connStr );
 echo "<div class='well'>";
-echo "<h4>Desconto, Preço e Prazo Médio</h4><hr>";
+echo "<h3>Desconto, Preço e Prazo Médio</h3>";
 echo "</div>";
 
 echo "<div class='well'>";
@@ -15,6 +15,9 @@ $retornaSQL = "	SELECT
 					
 					WHERE A3.D_E_L_E_T_ <> '*' 
 					AND A3.A3_MSBLQL <> '1'
+					AND A3.A3_COD <> '999997'
+					AND A3.A3_COD <> '999998'
+					AND A3.A3_COD <> '999999'
 					
 					ORDER BY A3.A3_REGIAO, A3.A3_COD";
 
@@ -42,9 +45,7 @@ while ( ! $rs->EOF ) {
 	
 	echo "<h3>$representante - $nome - $nomeReduzido</h3>";
 	
-		echo "<table class='table table-hover'><tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
-		echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
-		echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
+	echo "<table class='table table-striped'>";
 	
 	// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	$retornaSQL2 = "SELECT 	DATEPART(mm, F.F2_EMISSAO) AS MES,
@@ -108,14 +109,17 @@ while ( ! $rs->EOF ) {
 	
 	$item = 0;
 	$filial2 = null;
+	$mes2 = null;
 	
 	$prazoMedioTotal = 0;
 	$descontoMedioTotal = 0;
 	$quantidadeItensTotal = 0;
 	$valorLiquidoTotal = 0;
+	$precoMedioTotal = 0;
 	
 	$prazoMedioXValorTotal = 0;
 	$descontoMedioXValorTotal = 0;
+	$precoMedioXValorTotal = 0;
 	
 	
 	for($i2 = 0; $i2 < $num_columns2; $i2 ++) {
@@ -139,37 +143,87 @@ while ( ! $rs->EOF ) {
 		$valorBruto = $fld2 [12]->value;
 		$valorLiquido = $fld2 [13]->value;
 		$vendedor = $fld2 [14]->value;
+		$precoMedio = $valorLiquido/$quantidadeItens;
 		
 		$prazoMedioTotal += $prazoMedio;
 		$descontoMedioTotal += $descontoMedio;
+		$precoMedioTotal += $precoMedio;
 		$quantidadeItensTotal += $quantidadeItens;
 		$valorLiquidoTotal += $valorLiquido;
 		
 		$prazoMedioXValorTotal += $prazoMedio * $valorLiquido;
 		$descontoMedioXValorTotal += $descontoMedio * $valorLiquido;
+		$precoMedioXValorTotal += $precoMedio * $valorLiquido;
 		
 		if (empty ( $filial2 ) || ($filial2 != $filial)) {
 			if ($filial == '0101') {
-				echo "Pradolux";
+					echo "<tr><th colspan = '16' bgcolor = '#5bc0de'>Pradolux</th></tr>";
+					echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
+					echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
+					echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
+					
+
 			} else {
-				echo "Luxparts";
+				
+					$item = 1;
+					$prazoMedioTotal =0;
+					$descontoMedioTotal =0;
+					$precoMedioTotal =0;
+					$quantidadeItensTotal =0;
+					$valorLiquidoTotal =0;
+					
+					$prazoMedioXValorTotal =0;
+					$descontoMedioXValorTotal =0;
+					$precoMedioXValorTotal =0;
+					
+					$prazoMedioTotal += $prazoMedio;
+					$descontoMedioTotal += $descontoMedio;
+					$precoMedioTotal += $precoMedio;
+					$quantidadeItensTotal += $quantidadeItens;
+					$valorLiquidoTotal += $valorLiquido;
+					
+					$prazoMedioXValorTotal += $prazoMedio * $valorLiquido;
+					$descontoMedioXValorTotal += $descontoMedio * $valorLiquido;
+					$precoMedioXValorTotal += $precoMedio * $valorLiquido;
+					
+					echo "<tr><th colspan = '10'>Médias Simples</th><th>".number_format(($prazoMedioTotal/$item), 2, ',', '.')."</th>";
+					echo "<th>".number_format((($descontoMedioTotal/$item)*100), 2, ',', '.')."</th>";
+					echo "<th>".number_format(($precoMedioTotal/$item), 2, ',', '.')."</th>";
+					echo "<th>".number_format(($quantidadeItensTotal/$item), 0, ',', '.')."</th>";
+					echo "<th>".number_format(($valorLiquidoTotal/$item), 0, ',', '.')."</th><th></th></tr>";
+						
+					echo "<tr><th colspan = '10'>Médias Ponderadas</th><th>".number_format(($prazoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
+					echo "<th>".number_format((($descontoMedioXValorTotal/$valorLiquidoTotal)*100), 2, ',', '.')."</th>";
+					echo "<th>".number_format(($precoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
+				
+					echo "<tr><th colspan = '16' bgcolor = '#d9534f'>Luxparts</th></tr>";
+					echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
+					echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
+					echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 			}
 		}
+		
+		if (empty ( $mes2 ) || ($mes2 != $mes)) {
+			echo "<tr><th colspan = '16' bgcolor = '#999'>$mes de $ano</th></tr>";
+		}
 		$filial2 = $filial;
+		$mes2 = $mes;
 		
 		echo "<tr><td>$item</td><td>$mes</td><td>$ano</td><td>$filial</td><td>$cliente</td><td>$razaoSocial</td>";
-		echo "<td>$nota</td><td>$pedido</td><td>$emissao</td><td>$comissao</td><td>$prazoMedio</td><td>" . number_format ( $descontoMedio * 100, 2, ',', '.' ) . "</td>";
-		echo "<td>$quantidadeItens</td><td>$valorLiquido</td><td>$vendedor</td></tr>";
+		echo "<td>$nota</td><td>$pedido</td><td>".date('d/m/Y', strtotime($emissao))."</td><td>$comissao %</td><td>$prazoMedio</td><td>" . number_format ( $descontoMedio * 100, 2, ',', '.' ) . "</td>";
+		echo "<td>".number_format($precoMedio, 2, ',', '.')."</td><td>$quantidadeItens</td><td>".number_format(($valorLiquido), 2, ',', '.')."</td><td>$vendedor</td></tr>";
 		$rs2->MoveNext ();
 	}
 	
 	echo "<tr><th colspan = '10'>Médias Simples</th><th>".number_format(($prazoMedioTotal/$item), 2, ',', '.')."</th>";
 	echo "<th>".number_format((($descontoMedioTotal/$item)*100), 2, ',', '.')."</th>";
+	echo "<th>".number_format(($precoMedioTotal/$item), 2, ',', '.')."</th>";
 	echo "<th>".number_format(($quantidadeItensTotal/$item), 0, ',', '.')."</th>";
 	echo "<th>".number_format(($valorLiquidoTotal/$item), 0, ',', '.')."</th><th></th></tr>";
 	
 	echo "<tr><th colspan = '10'>Médias Ponderadas</th><th>".number_format(($prazoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
 	echo "<th>".number_format((($descontoMedioXValorTotal/$valorLiquidoTotal)*100), 2, ',', '.')."</th>";
+	echo "<th>".number_format(($precoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
 	echo "<th></th>";
 	echo "<th></th><th></th></tr>";
 	
