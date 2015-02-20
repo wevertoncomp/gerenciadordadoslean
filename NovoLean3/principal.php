@@ -65,6 +65,10 @@
 		<button type="button" class="btn btn-default btn-lg">
 			Pedidos em Aberto
 		</button></a>
+	<a href='?pg=consultaItemPedido'>
+		<button type="button" class="btn btn-default btn-lg">
+			Consulta Itens em Pedidos
+		</button></a>
   </div>
 </div>
 
