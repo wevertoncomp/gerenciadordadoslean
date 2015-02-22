@@ -2,8 +2,8 @@
 $conn->open ( $connStr );
 
 //$setor = 0;
-echo "<div class='well'>";
-echo "<h4>Estoques</h4><hr>";
+echo "<div class='well'><a name = 'topo'></a>";
+echo "<h4>Estoques</h4>";
 echo "</div>";
 
 // Combobox da data
@@ -26,6 +26,7 @@ $instrucaoSQL = "SELECT
 				 AND NR.NNR_CODIGO <> '600-TR'
 				 ORDER BY NR.NNR_DESCRI";
 $rs = $conn->execute ( $instrucaoSQL );
+//$rs3 = $conn->execute ( $instrucaoSQL );
 
 $num_columns = $rs->Fields->Count ();
 
@@ -33,9 +34,20 @@ for($i = 0; $i < $num_columns; $i ++) {
 	$fld [$i] = $rs->Fields ( $i );
 }
 
+echo "<div class='well'> | ";
+while ( ! $rs->EOF ) {
+	$link = "".substr ( $fld [1]->value, 0, strpos ( $fld [1]->value, ' -' ) )."";
+	echo "<a href = '#$link'>$link</a>    |    ";
+	$rs->MoveNext ();
+	}
+echo "</div>";
+
+	$rs->MoveFirst();
+	
 while ( ! $rs->EOF ) {
 	echo "<div class='well'>";
-		echo "<h4>" . substr ( $fld [1]->value, 0, strpos ( $fld [1]->value, " -" ) ) . "</h4><br />";
+			$link = "".substr ( $fld [1]->value, 0, strpos ( $fld [1]->value, ' -' ) )."";
+			echo "<a name = '$link'></a><h2>$link</h2> <a href = '#topo'>Voltar ao topo</a>";
 		$setor = 				$fld [0]->value;
 		
 		
@@ -55,7 +67,7 @@ $instrucaoSQL2 = "	SELECT
 					(SELECT SUM(B2.B2_QATU) FROM SB2010 B2 WHERE B2.B2_COD = B1.B1_COD AND B2.B2_LOCAL LIKE '%EN') AS EstoqueEN,
 					(SELECT SUM(B2.B2_QATU) FROM SB2010 B2 WHERE B2.B2_COD = B1.B1_COD AND B2.B2_LOCAL LIKE '%TR') AS EstoqueTR,
 					B1.B1_LOCPAD,
-					Z9.ZZ9_FAMILI
+					RTRIM(Z9.ZZ9_FAMILI)
 					
 					
 					FROM SB1010 B1 WITH (NOLOCK)
@@ -83,8 +95,9 @@ for($i2 = 0; $i2 < $num_columns2; $i2 ++) {
 $somaEstoque = 0;
 $somaEstoqueMaximo = 0;
 $somaEstoqueUtil = 0;
+$observacoes2 = null;
 
-echo "<table class='table table-hover'><tr><td>Produto</th><th>EstoquePP</th>";
+echo "<table class='table table-hover'><tr><th>Produto</th><th>EstoquePP</th>";
 echo "<th>EstoqueAL</th><th>EstoquePVC</th><th>EstoqueZIN</th><th>EstoqueEN</th><th>EstoqueTR</th><th>Total</th>";
 echo "<th>Máximo</th><th>Porcentagem</th><th>Qualidade</th><th>Observações</th></tr>";
 
@@ -101,12 +114,28 @@ while ( ! $rs2->EOF ) {
 	$estoqueZIN =			$fld2 [8]->value;
 	$estoqueEN =			$fld2 [9]->value;
 	$estoqueTR =			$fld2 [10]->value;
-	//$local =				$fld2 [11]->value;
+	$local =				$fld2 [11]->value;
 	$observacoes =			$fld2 [12]->value;
 	$estoqueTotal = $estoquePP + $estoqueAL + $estoquePVC + $estoqueZIN + $estoqueEN + $estoqueTR;
 	$estoqueMaximo = ($kanbanVD+$kanbanAM+$kanbanVM) * $qtdPorKanban;
 	$porcentagem = $estoqueTotal / $estoqueMaximo;
 	$qualidade = $estoqueTotal / $estoqueMaximo;
+	
+	if (empty($observacoes2)) {
+		if (isset($observacoes)) {
+			echo "<tr><th colspan = '12' bgcolor = '#5cb85c'>$observacoes</th>";
+			echo "<tr><th>Produto</th><th>EstoquePP</th>";
+			echo "<th>EstoqueAL</th><th>EstoquePVC</th><th>EstoqueZIN</th><th>EstoqueEN</th><th>EstoqueTR</th><th>Total</th>";
+			echo "<th>Máximo</th><th>Porcentagem</th><th>Qualidade</th><th>Observações</th></tr>";
+		}
+		
+	} elseif ($observacoes2 != $observacoes) {
+		echo "<tr><th colspan = '12' bgcolor = '#5cb85c'>$observacoes</th>";
+		echo "<tr><th>Produto</th><th>EstoquePP</th>";
+		echo "<th>EstoqueAL</th><th>EstoquePVC</th><th>EstoqueZIN</th><th>EstoqueEN</th><th>EstoqueTR</th><th>Total</th>";
+		echo "<th>Máximo</th><th>Porcentagem</th><th>Qualidade</th><th>Observações</th></tr>";
+	}
+	$observacoes2 = $observacoes;
 	
 	if ($qualidade > 1) {
 		$qualidade = 1;
