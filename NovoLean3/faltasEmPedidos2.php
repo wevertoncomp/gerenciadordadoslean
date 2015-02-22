@@ -184,7 +184,7 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 							
 							SET @consultaSoMeta = '1';
 							--SET @dataMeta = 'DATEPART(yymmdd, CURRENT_TIMESTAMP)';
-							SET @dataMeta = '20150216';
+							SET @dataMeta = '20150223';
 							SET @filial = '0101';
 							SET @localEstoque = 'AP-A01';
 							SET @localAreaTransito = '%TR';
