@@ -78,6 +78,14 @@ for($i = 0; $i < $num_columns; $i ++) {
 	$fld [$i] = $rs->Fields ( $i );
 }
 
+/*while ( ! $rs->EOF ) {
+	$setor = $fld [0]->value;
+	echo $setor;
+	$rs->MoveNext();
+}
+
+$rs->MoveFirst();*/
+
 $contador = 1;
 $aprovado = true;
 while ( ! $rs->EOF ) {
