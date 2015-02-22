@@ -10,6 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-datepicker.css" rel="stylesheet">
     <script src="js/jquery-1.11.2.min.js"></script>
+    
    
   </head>
   <body>
@@ -29,7 +30,12 @@ include 'funcoes.php';
 		<div class="row-fluid">
 			<div class="span12">
 								<div class='well'>
-									<h2>Gerenciador de Dados Lean</h2>
+									<div class="span7">
+										<h2>Gerenciador de Dados Lean</h2>
+									</div>
+									<div class="span3">
+										<a href = 'index.php'>Voltar a página inicial</a>
+									</div>
 								</div>
 			</div>
 		</div>
