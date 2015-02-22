@@ -1,8 +1,14 @@
 <?php
+
+function preencheHeaderTabela() {
+	
+}
+
 // ob_end_flush();
 $conn->open ( $connStr );
-echo "<div class='well'>";
+echo "<div class='well'><a name= 'topo'></a>";
 echo "<h3>Desconto, Preço e Prazo Médio</h3>";
+echo "<a class='page-scroll' href = '#A'>Região A</a> | <a class='page-scroll' href = '#B'>Região B</a>";
 echo "</div>";
 
 echo "<div class='well'>";
@@ -39,7 +45,7 @@ while ( ! $rs->EOF ) {
 	$regiao = $fld [3]->value;
 	
 	if (empty ( $regiao2 ) || ($regiao2 != $regiao)) {
-		echo "<h2>Região $regiao</h2>";
+		echo "<h2><a name = '$regiao'></a>Região $regiao</h2> <a class='page-scroll' href = '#topo'>Voltar ao topo</a>";
 	}
 	$regiao2 = $regiao;
 	
