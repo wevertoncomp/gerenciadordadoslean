@@ -9,6 +9,7 @@ $conn->open ( $connStr );
 echo "<div class='well'><a name= 'topo'></a>";
 echo "<h3>Desconto, Preço e Prazo Médio</h3>";
 echo "<a class='page-scroll' href = '#A'>Região A</a> | <a class='page-scroll' href = '#B'>Região B</a>";
+echo "<p>* Pedidos que passaram por aprovação da direção . Válido somente a partir de 10/10/2014 quando foi feita a personalização e estas aprovações começaram a ser gravadas no banco de dados. Pedidos anteriores a esta data deve ser analisado o valor, desconto e prazo de pagamento.</p>";
 echo "</div>";
 
 echo "<div class='well'>";
@@ -17,13 +18,14 @@ $retornaSQL = "	SELECT
 
 					A3.A3_COD, A3.A3_NOME, A3.A3_NREDUZ, RTRIM(A3.A3_REGIAO)
 					
-					FROM SA3010 A3
+					FROM SA3010 A3 WITH (NOLOCK)
 					
 					WHERE A3.D_E_L_E_T_ <> '*' 
 					AND A3.A3_MSBLQL <> '1'
 					AND A3.A3_COD <> '999997'
 					AND A3.A3_COD <> '999998'
 					AND A3.A3_COD <> '999999'
+					--AND A3.A3_REGIAO LIKE '%B%'
 					
 					ORDER BY A3.A3_REGIAO, A3.A3_COD";
 
@@ -90,7 +92,11 @@ while ( ! $rs->EOF ) {
 					) AS QTD_ITENS,
 					F.F2_VALBRUT,
 				   	F.F2_VALMERC AS VALOR_LIQUIDO,
-				   	F.F2_VEND1
+				   	F.F2_VEND1,
+				   	(SELECT TOP 1 Z5.ZZ5_NOMUSU FROM ZZ5010 Z5 WITH (NOLOCK)
+					INNER JOIN SD2010 D2 ON Z5.ZZ5_PEDIDO = D2.D2_PEDIDO
+					WHERE (Z5.ZZ5_NOMUSU = '9001' OR Z5.ZZ5_NOMUSU = '9002' OR Z5.ZZ5_NOMUSU = '9004')
+					AND D2_DOC = F.F2_DOC AND D2_FILIAL = F.F2_FILIAL) AS Aprovador
 			
 			FROM SF2010 F WITH (NOLOCK)
 			
@@ -101,13 +107,13 @@ while ( ! $rs->EOF ) {
 			WHERE 	(F.F2_FILIAL = '0101' OR F.F2_FILIAL = '0201')
 				AND F.F2_SERIE = '1'
 				AND (SELECT COUNT(E1_PARCELA) FROM SE1010 WITH (NOLOCK) WHERE E1_NUM = F.F2_DOC) > 0
-				AND F.F2_EMISSAO BETWEEN '20150101' AND '20150231'
+				AND F.F2_EMISSAO BETWEEN '20150101' AND '20151231'
 				AND F.D_E_L_E_T_ != '*'
 				AND F.F2_VEND1 = '$representante'
 				AND F.F2_CLIENTE <> '003718'
 				
-				ORDER BY F.F2_FILIAL, DATEPART(YY, F.F2_EMISSAO) DESC,
-				DATEPART(mm, F.F2_EMISSAO) ASC";
+				ORDER BY DATEPART(YY, F.F2_EMISSAO) DESC, DATEPART(mm, F.F2_EMISSAO) DESC, F.F2_FILIAL 
+				";
 	
 	$rs2 = $conn->execute ( $retornaSQL2 );
 	
@@ -136,6 +142,7 @@ while ( ! $rs->EOF ) {
 		$mes = $fld2 [0]->value;
 		$ano = $fld2 [1]->value;
 		$filial = $fld2 [2]->value;
+		$mesPorExtenso = retornaMesPorExtenso($mes);
 		
 		if (empty ( $filial2 ) || ($filial2 != $filial)) {
 			if ($filial == '0101') {
@@ -185,16 +192,16 @@ while ( ! $rs->EOF ) {
 		}
 		$filial2 = $filial;
 		
-		/*if (empty ( $mes ) || ($mes2 != $mes)) {
-			//if ($filial == '0101') {
-				echo "<tr><th colspan = '16' bgcolor = '#5bc0de'>Pradolux</th></tr>";
-				/*echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
+		if (empty ( $mes ) || ($mes2 != $mes)) {
+			if (empty($mes2)) {
+				echo "<tr><th colspan = '16' bgcolor = '#999'>$mesPorExtenso de $ano</th></tr>";
+				
+				echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
 				 echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
-				echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";*/
+				echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 					
 		
-			//} else {
-					
+			} else {
 				/*$prazoMedioTotal += $prazoMedio;
 				 $descontoMedioTotal += $descontoMedio;
 				$precoMedioTotal += $precoMedio;
@@ -205,7 +212,7 @@ while ( ! $rs->EOF ) {
 				$descontoMedioXValorTotal += $descontoMedio * $valorLiquido;
 				$precoMedioXValorTotal += $precoMedio * $valorLiquido;*/
 					
-				/*echo "<tr><th colspan = '10'>Médias Simples</th><th>".number_format(($prazoMedioTotal/$item), 2, ',', '.')."</th>";
+				echo "<tr><th colspan = '10'>Médias Simples</th><th>".number_format(($prazoMedioTotal/$item), 2, ',', '.')."</th>";
 				echo "<th>".number_format((($descontoMedioTotal/$item)*100), 2, ',', '.')."</th>";
 				echo "<th>".number_format(($precoMedioTotal/$item), 2, ',', '.')."</th>";
 				echo "<th>".number_format(($quantidadeItensTotal/$item), 0, ',', '.')."</th>";
@@ -215,7 +222,7 @@ while ( ! $rs->EOF ) {
 				echo "<th>".number_format((($descontoMedioXValorTotal/$valorLiquidoTotal)*100), 2, ',', '.')."</th>";
 				echo "<th>".number_format(($precoMedioXValorTotal/$valorLiquidoTotal), 2, ',', '.')."</th>";
 		
-				echo "<tr><th colspan = '16' bgcolor = '#d9534f'>Luxparts</th></tr>";
+				echo "<tr><th colspan = '16' bgcolor = '#999'>$mesPorExtenso de $ano</th></tr>";
 				echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
 				echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
 				echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
@@ -229,9 +236,9 @@ while ( ! $rs->EOF ) {
 				$prazoMedioXValorTotal =0;
 				$descontoMedioXValorTotal =0;
 				$precoMedioXValorTotal =0;
-			//}
+			}
 		}
-		$mes2 = $mes;*/
+		$mes2 = $mes;
 		
 		
 		$item ++;
@@ -247,8 +254,13 @@ while ( ! $rs->EOF ) {
 		$valorBruto = $fld2 [12]->value;
 		$valorLiquido = $fld2 [13]->value;
 		$vendedor = $fld2 [14]->value;
+		$aprovador = NULL;
+		$aprovador = $fld2 [15]->value;
+		
+		if (isset($aprovador)) {
+			$aprovador = "*";
+		}
 		$precoMedio = $valorLiquido/$quantidadeItens;
-		$mesPorExtenso = retornaMesPorExtenso($mes);
 		
 		$prazoMedioTotal += $prazoMedio;
 		$descontoMedioTotal += $descontoMedio;
@@ -260,17 +272,17 @@ while ( ! $rs->EOF ) {
 		$descontoMedioXValorTotal += $descontoMedio * $valorLiquido;
 		$precoMedioXValorTotal += $precoMedio * $valorLiquido;
 		
-		if (empty ( $mes2 ) || ($mes2 != $mes)) {
+		/*if (empty ( $mes2 ) || ($mes2 != $mes)) {
 			echo "<tr><th colspan = '16' bgcolor = '#999'>$mesPorExtenso de $ano</th></tr>";
 			echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
 			echo "<th>Cliente</th><th>Razão Social</th><th>Nota</th><th>Pedido</th><th>Emissão</th>";
 			echo "<th>Comissão</th><th>Prazo M</th><th>Desconto M</th><th>Preço M</th><th>Itens</th><th>Val. Liq.</th><th>Vendedor</th></tr>";
 		}
-		$mes2 = $mes;
+		$mes2 = $mes;*/
 		
 		echo "<tr><td>$item</td><td>$mes</td><td>$ano</td><td>$filial</td><td>$cliente</td><td>$razaoSocial</td>";
 		echo "<td>$nota</td><td>$pedido</td><td>".date('d/m/Y', strtotime($emissao))."</td><td>$comissao %</td><td>$prazoMedio</td><td>" . number_format ( $descontoMedio * 100, 2, ',', '.' ) . "</td>";
-		echo "<td>".number_format($precoMedio, 2, ',', '.')."</td><td>$quantidadeItens</td><td>".number_format(($valorLiquido), 2, ',', '.')."</td><td>$vendedor</td></tr>";
+		echo "<td>".number_format($precoMedio, 2, ',', '.')."</td><td>$quantidadeItens</td><td>".number_format(($valorLiquido), 2, ',', '.')."</td><td>$vendedor $aprovador</td></tr>";
 		$rs2->MoveNext ();
 	}
 	
