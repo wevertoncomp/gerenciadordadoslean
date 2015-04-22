@@ -176,7 +176,7 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 	
 	$retornaProdutividadeSQL = "DECLARE @consultaSoMeta VARCHAR(1);
 							DECLARE @filial VARCHAR(4);
-							DECLARE @dataMeta VARCHAR(8);
+							DECLARE @dataMeta DATE;
 							DECLARE @localEstoque VARCHAR(6);
 							DECLARE @localAreaTransito VARCHAR(6);
 							DECLARE @localAreaTransitoExceto VARCHAR(6);
@@ -184,7 +184,8 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 							
 							SET @consultaSoMeta = '1';
 							--SET @dataMeta = 'DATEPART(yymmdd, CURRENT_TIMESTAMP)';
-							SET @dataMeta = '20150223';
+							SET @dataMeta = GETDATE();
+							--SET @dataMeta = '20150304';
 							SET @filial = '0101';
 							SET @localEstoque = 'AP-A01';
 							SET @localAreaTransito = '%TR';
