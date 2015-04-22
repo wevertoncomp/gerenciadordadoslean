@@ -71,9 +71,10 @@ echo "</div>";
 		if ($importado == 'S') {
 			$color = '#00FF00';
 		}
-	
-		echo "<tr bgcolor = '$color'><td>$produto</td><td>$descricao</td><td>". number_format($quantidade, 0) ." $unidadeMedida</td>";
-		echo "<td>$mes</td><td>$ano</td></tr>";
+
+		$mesPorExtenso = retornaMesPorExtenso($mes);
+		echo "<tr bgcolor = '$color'><td>$produto</td><td>$descricao</td><td>". number_format($quantidade, 0, ',', '.') ." $unidadeMedida</td>";
+		echo "<td>$mesPorExtenso</td><td>$ano</td></tr>";
 		$rs->MoveNext ();
 	}
 	
