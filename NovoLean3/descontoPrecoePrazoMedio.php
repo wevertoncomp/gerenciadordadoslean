@@ -6,8 +6,51 @@ function preencheHeaderTabela() {
 
 // ob_end_flush();
 $conn->open ( $connStr );
-echo "<div class='well'><a name= 'topo'></a>";
+
+echo "<div class='well'>";
 echo "<h3>Desconto, Preço e Prazo Médio</h3>";
+
+echo "<form action='?pg=descontoPrecoePrazoMedio' method = 'post' class='form-inline'>";
+echo "<input type='hidden' name='acao' value='enviar'>";
+echo "<span><b>Informe o intervalo de datas que deseja visualizar: </b></span>";
+echo "<br/>";
+
+$dataInicial = $_POST ['dataInicial'];
+$dataFinal = $_POST ['dataFinal'];
+
+//$dataInicial = '20150222';
+//$dataFinal = '20150228';
+
+// TextField
+?>
+<div class="form-group">
+<label for="dataInicial">Data Inicial</label>
+<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2014-01-01">
+</div>
+<div class="form-group">
+<label for="dataFinal">Data Final</label>
+<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
+</div>
+<?php 
+
+echo "<br />";
+
+echo "<input type='submit' value='Buscar'>";
+echo "</form>";
+echo "</div>";
+
+if (isset($dataInicial) && isset($dataFinal)) {
+	
+	$dataInicial = str_replace('-', '', $dataInicial);
+	$dataFinal = str_replace('-', '', $dataFinal);
+	
+	$dataInicialFormatada = substr($dataInicial, 6, 2) ."/". substr($dataInicial, 4, 2) ."/". substr($dataInicial, 0, 4);
+	$dataFinalFormatada = substr($dataFinal, 6, 2) ."/". substr($dataFinal, 4, 2) ."/". substr($dataFinal, 0, 4);;
+
+echo "<div class='well'>";
+echo "<h4>Mostrando dados de $dataInicialFormatada até $dataFinalFormatada</h4>";
+
+
 echo "<a class='page-scroll' href = '#A'>Região A</a> | <a class='page-scroll' href = '#B'>Região B</a>";
 echo "<p>* Pedidos que passaram por aprovação da direção . Válido somente a partir de 10/10/2014 quando foi feita a personalização e estas aprovações começaram a ser gravadas no banco de dados. Pedidos anteriores a esta data deve ser analisado o valor, desconto e prazo de pagamento.</p>";
 echo "</div>";
@@ -45,6 +88,15 @@ while ( ! $rs->EOF ) {
 	$nome = $fld [1]->value;
 	$nomeReduzido = $fld [2]->value;
 	$regiao = $fld [3]->value;
+	
+	$prazoMedioRepresentante = 0;
+	$descontoMedioRepresentante = 0;
+	$precoMedioRepresentante = 0;
+	
+	$prazoMedioXValorTotalRepresentante = 0;
+	$descontoMedioXValorTotalRepresentante = 0;
+	$precoMedioXValorTotalRepresentante = 0;
+	$valorLiquidoTotalRepresentante = 0;
 	
 	if (empty ( $regiao2 ) || ($regiao2 != $regiao)) {
 		echo "<h2><a name = '$regiao'></a>Região $regiao</h2> <a class='page-scroll' href = '#topo'>Voltar ao topo</a>";
@@ -92,11 +144,11 @@ while ( ! $rs->EOF ) {
 					) AS QTD_ITENS,
 					F.F2_VALBRUT,
 				   	F.F2_VALMERC AS VALOR_LIQUIDO,
-				   	F.F2_VEND1,
-				   	(SELECT TOP 1 Z5.ZZ5_NOMUSU FROM ZZ5010 Z5 WITH (NOLOCK)
-					INNER JOIN SD2010 D2 ON Z5.ZZ5_PEDIDO = D2.D2_PEDIDO
-					WHERE (Z5.ZZ5_NOMUSU = '9001' OR Z5.ZZ5_NOMUSU = '9002' OR Z5.ZZ5_NOMUSU = '9004')
-					AND D2_DOC = F.F2_DOC AND D2_FILIAL = F.F2_FILIAL) AS Aprovador
+				   	F.F2_VEND1--,
+				   	--(SELECT TOP 1 Z5.ZZ5_NOMUSU FROM ZZ5010 Z5 WITH (NOLOCK)
+					--INNER JOIN SD2010 D2 ON Z5.ZZ5_PEDIDO = D2.D2_PEDIDO
+					--WHERE (Z5.ZZ5_NOMUSU = '9001' OR Z5.ZZ5_NOMUSU = '9002' OR Z5.ZZ5_NOMUSU = '9004')
+					--AND D2_DOC = F.F2_DOC AND D2_FILIAL = F.F2_FILIAL) AS Aprovador
 			
 			FROM SF2010 F WITH (NOLOCK)
 			
@@ -107,7 +159,7 @@ while ( ! $rs->EOF ) {
 			WHERE 	(F.F2_FILIAL = '0101' OR F.F2_FILIAL = '0201')
 				AND F.F2_SERIE = '1'
 				AND (SELECT COUNT(E1_PARCELA) FROM SE1010 WITH (NOLOCK) WHERE E1_NUM = F.F2_DOC) > 0
-				AND F.F2_EMISSAO BETWEEN '20150101' AND '20151231'
+				AND F.F2_EMISSAO BETWEEN '$dataInicial' AND '$dataFinal'
 				AND F.D_E_L_E_T_ != '*'
 				AND F.F2_VEND1 = '$representante'
 				AND F.F2_CLIENTE <> '003718'
@@ -128,6 +180,10 @@ while ( ! $rs->EOF ) {
 	$quantidadeItensTotal = 0;
 	$valorLiquidoTotal = 0;
 	$precoMedioTotal = 0;
+	
+	$prazoMedioRepresentante = 0;
+	$descontoMedioRepresentante = 0;
+	$precoMedioRepresentante = 0;
 	
 	$prazoMedioXValorTotal = 0;
 	$descontoMedioXValorTotal = 0;
@@ -272,6 +328,16 @@ while ( ! $rs->EOF ) {
 		$descontoMedioXValorTotal += $descontoMedio * $valorLiquido;
 		$precoMedioXValorTotal += $precoMedio * $valorLiquido;
 		
+		// Variáveis para calcular valor total por representante
+		$prazoMedioRepresentante += $prazoMedio;
+		$descontoMedioRepresentante += $descontoMedio;
+		$precoMedioRepresentante += $precoMedio;
+		$valorLiquidoTotalRepresentante += $valorLiquido;
+		
+		$prazoMedioXValorTotalRepresentante += $prazoMedio * $valorLiquido;
+		$descontoMedioXValorTotalRepresentante += $descontoMedio * $valorLiquido;
+		$precoMedioXValorTotalRepresentante += $precoMedio * $valorLiquido;
+		
 		/*if (empty ( $mes2 ) || ($mes2 != $mes)) {
 			echo "<tr><th colspan = '16' bgcolor = '#999'>$mesPorExtenso de $ano</th></tr>";
 			echo "<tr><th>Item</th><th>Mês</th><th>Ano</th><th>Filial</th>";
@@ -298,6 +364,13 @@ while ( ! $rs->EOF ) {
 	echo "<th></th>";
 	echo "<th></th><th></th></tr>";
 	
+	echo "<tr><th colspan = '10'  bgcolor = '#00FF00'>Médias Ponderadas do Representante</th>";
+	echo "<th bgcolor = '#00FF00'>".number_format(($prazoMedioXValorTotalRepresentante/$valorLiquidoTotalRepresentante), 2, ',', '.')."</th>";
+	echo "<th bgcolor = '#00FF00'>".number_format((($descontoMedioXValorTotalRepresentante/$valorLiquidoTotalRepresentante)*100), 2, ',', '.')."</th>";
+	echo "<th bgcolor = '#00FF00'>".number_format(($precoMedioXValorTotalRepresentante/$valorLiquidoTotalRepresentante), 2, ',', '.')."</th>";
+	echo "<th bgcolor = '#00FF00'></th>";
+	echo "<th bgcolor = '#00FF00'></th><th bgcolor = '#00FF00'></th></tr>";
+	
 	echo "</tr></table>";
 	
 	// $rs2->MoveNext ();
@@ -311,6 +384,11 @@ while ( ! $rs->EOF ) {
 // $rs->MoveNext ();
 
 echo "</div>";
+} else {
+	echo "<div class='well'>";
+	echo "<h4>Preencha as datas para visualizar</h4>";
+	echo "</div>";
+}
 
 $rs->Close ();
 $rs = null;
