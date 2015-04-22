@@ -104,7 +104,7 @@ echo "<div class='well'>";
 		$rs2->MoveNext ();
 	}
 	
-	echo "<tfoot><td>Totais</td><td></td><td></td><td><button type='button' class='btn btn-lg btn-primary'>". number_format($quantidadeTotal, 0, ',', '.') ." un</button></td>";
+	echo "<tfoot><td>Totais</td><td></td><td></td><td><button type='button' class='btn btn-lg btn-primary'>". number_format(00, 0, ',', '.') ." un</button></td>";
 	echo "<td><button type='button' class='btn btn-lg btn-primary'>". number_format ($pesoProduzidoTotal/1000, 2, '.', '' ) ." Kg</button></td></tfoot></table>";
 	
 	$rs2->Close ();
