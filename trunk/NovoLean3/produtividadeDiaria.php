@@ -122,6 +122,7 @@ while ( ! $rs->EOF ) {
 	WHERE D3.D3_LOCAL = '$setor' 
 	AND D3.D3_EMISSAO = '$data'
 	AND D3.D3_TM = '010'
+	AND D3.D3_ESTORNO <> 'S'
 	
 	ORDER BY D3.D3_COD";
 	
