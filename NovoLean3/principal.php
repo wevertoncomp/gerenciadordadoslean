@@ -98,5 +98,10 @@
 		<button type="button" class="btn btn-default btn-lg">
 			Lista de Materiais
 		</button></a>
+		
+			<a href='?pg=previsaoPesoCubagemPedidos'>
+		<button type="button" class="btn btn-default btn-lg">
+			Previsão de Peso e Cubagem de Pedidos
+		</button></a>
 	</div>
 </div>
