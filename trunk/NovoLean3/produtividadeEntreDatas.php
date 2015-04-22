@@ -10,32 +10,43 @@ echo "<input type='hidden' name='acao' value='enviar'>";
 echo "<span><b>Informe o intervalo de datas que deseja visualizar: </b></span>";
 echo "<br/>";
 
-//$dataInicial = $_POST ['dataInicial'];
-//$dataFinal = $_POST ['dataFinal'];
+$dataInicial = $_POST ['dataInicial'];
+$dataFinal = $_POST ['dataFinal'];
 
-$dataInicial = '20150101';
-$dataFinal = '20150131';
+$dataInicial = str_replace('-', '', $dataInicial);
+$dataFinal = str_replace('-', '', $dataFinal);
+
+$dataInicialFormatada = substr($dataInicial, 6, 2) ."/". substr($dataInicial, 4, 2) ."/". substr($dataInicial, 0, 4);
+$dataFinalFormatada = substr($dataFinal, 6, 2) ."/". substr($dataFinal, 4, 2) ."/". substr($dataFinal, 0, 4);;
+
+//$dataInicial = '20150222';
+//$dataFinal = '20150228';
 
 // TextField
 ?>
-<!-- <div class="form-group">
+<div class="form-group">
 <label for="dataInicial">Data Inicial</label>
-<input type="text" class="form-control" id="dataInicial" placeholder="Data Inicial">
+<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2015-01-01">
 </div>
 <div class="form-group">
 <label for="dataFinal">Data Final</label>
-<input type="text" class="form-control" id="dataFinal" placeholder="Data Final">
-</div> -->
+<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
+</div>
 <?php 
-
-echo "Mostrando valores entre ". $dataInicial." e ".$dataFinal;
 
 echo "<br />";
 
 echo "<input type='submit' value='Buscar'>";
 echo "</form>";
+
+echo "<h4>Mostrando dados de $dataInicialFormatada até $dataFinalFormatada</h4>";
+
 echo "</div>";
 
+$horasTotaisEmpresa = 0;
+$quantidadeTotalEmpresa = 0;
+$tempoIdealTotalEmpresa = 0;
+$produtividadeTotalEmpresa = 0;
 
 
 //echo "<table cellspacing = 3 ><tr>";
@@ -43,13 +54,18 @@ $instrucaoSQL = "SELECT
 				 NR.NNR_CODIGO AS CODIGO, 
 				 NR.NNR_DESCRI AS DESCRICAO,
 				 SUM(Z8.ZZ8_TOTAL) AS HORAS
-				 FROM NNR010 NR
+				 FROM NNR010 NR WITH (NOLOCK)
 				 INNER JOIN ZZ8010 Z8 ON NR.NNR_CODIGO = Z8.ZZ8_LOCAL
 				 WHERE NR.NNR_DESCRI LIKE '%- TRANSITO%'
 				 AND NR.NNR_DESCRI LIKE '%PRODUCAO%'
 				 AND NR.NNR_CODIGO <> 'RXR-TR'
 				 AND NR.NNR_CODIGO <> 'SOM-TR'
+				 AND NR.NNR_CODIGO <> 'MET-TR'
+				 AND NR.NNR_CODIGO <> 'SDU-TR'
+				 --AND NR.NNR_CODIGO <> 'SDT-TR'
+				 AND NR.NNR_CODIGO <> 'PIN-TR'
 				 AND Z8.ZZ8_DATA BETWEEN '$dataInicial' AND '$dataFinal'
+				 AND Z8.D_E_L_E_T_ <> '*'
 				 GROUP BY NR.NNR_CODIGO, NR.NNR_DESCRI
 				 ORDER BY NR.NNR_DESCRI";
 $rs = $conn->execute ( $instrucaoSQL );
@@ -61,11 +77,15 @@ for($i = 0; $i < $num_columns; $i ++) {
 }
 
 $contador = 1;
+$contagemAreas = 0;
 $aprovado = true;
 while ( ! $rs->EOF ) {
 	$setor = null;
 	$setor = $fld [0]->value;
 	$horas = $fld [2]->value;
+	$contagemAreas++;
+	
+	$horasTotaisEmpresa += $horas;
 	// for($i = 0; $i < $num_columns; $i ++) {
 	// if ($aprovado == true) {
 	// echo "<td>" . $fld [0]->value . "</td><td>" . $fld [2]->value . " h</td><td><img src='images/ok_16x16.png'></td><td bgcolor='#999'></td>";
@@ -89,7 +109,7 @@ while ( ! $rs->EOF ) {
 	
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Produto</th><th>Tempo Unitário</th><th>Qtd Produzida</th><th>Tempo Ideal</th><th>Produtividade</th></tr>";
 	
-	$retornaProdutividadeSQL = "SELECT D3.D3_COD, Z9.ZZ9_TEMPOP, D3.D3_QUANT, Z9.ZZ9_QTDOPE FROM SD3010 D3
+	$retornaProdutividadeSQL = "SELECT D3.D3_COD, Z9.ZZ9_TEMPOP, D3.D3_QUANT, Z9.ZZ9_QTDOPE FROM SD3010 D3 WITH (NOLOCK)
 	
 	INNER JOIN ZZ9010 Z9 ON D3.D3_COD = Z9.ZZ9_PRODUT
 	
@@ -123,6 +143,10 @@ while ( ! $rs->EOF ) {
 		$quantidadeTotal += $quantidadeProduzida;
 		$tempoIdealTotal += $tempoTotal;
 		$item++;
+		
+		$produtividadeTotalEmpresa += ( float ) $produtividade;
+		$quantidadeTotalEmpresa += $quantidadeProduzida;
+		$tempoIdealTotalEmpresa += $tempoTotal;
 	
 		echo "<tr><td>$item</td><td>$produto</td><td>$tempoUnitario seg</td><td>$quantidadeProduzida un</td>";
 		echo "<td>" . number_format ($tempoTotal / 60, 0, '.', '' ) . " min.</td><td>" . number_format ( $produtividade * 100, 2, '.', '' ) . " %</td></tr>";
@@ -143,6 +167,18 @@ while ( ! $rs->EOF ) {
 
 echo "</tr></table>";
 //echo "</div>";
+
+$tempoIdealTotalEmpresaEmHoras = ($tempoIdealTotalEmpresa/60/60);
+
+echo "<div class='well'>";
+echo "<h3>Produtividade Geral da Pradolux</h3>";
+echo "<p>Horas totais trabalhadas: ".number_format($horasTotaisEmpresa, 0, ',', '.') ." horas </p> ";
+echo "<p>Quantidade total de produtos produzidos: ".number_format($quantidadeTotalEmpresa, 0, ',', '.') ." unidades </p> ";
+echo "<p>Tempo Ideal de produção dos produtos: ". number_format ($tempoIdealTotalEmpresaEmHoras, 0, ',', '.' ) ." horas</p> ";
+echo "<p>Produtividade: <strong>". number_format(($tempoIdealTotalEmpresaEmHoras/$horasTotaisEmpresa)*100 , 2, ',', '.' ) ." %</strong></p>";
+//echo "<p>Produtividade com média simples: ". number_format (($produtividadeTotalEmpresa/$contagemAreas)*100, 2, ',', '.' ) ." %</p>";
+echo "<p>Produção de produto padrão: equivalente a <strong>". number_format(($tempoIdealTotalEmpresa/215) , 0, ',', '.' ) ."</strong> unidades do PL07162209 (215 seg.)";
+echo "</div>";
 
 $rs->Close ();
 $rs = null;
