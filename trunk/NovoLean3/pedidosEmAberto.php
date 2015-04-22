@@ -14,7 +14,7 @@ echo "</div>";
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Filial</th><th>Pedido</th>";
 	echo "<th>Pedido Pradolux</th><th>Cliente</th><th>Razão Social</th><th></th><th>Evento</th><th>Cond. Pag.</th></tr>";
 	
-	$retornaProdutividadeSQL = "SELECT C5.C5_FILIAL AS Filial,
+	$retornaSQL = "SELECT C5.C5_FILIAL AS Filial,
        C5.C5_NUM AS Pedido,
        C5.C5_XPEDORI AS PedidoPradolux,
        C5.C5_CLIENTE AS Cliente,
@@ -46,7 +46,7 @@ WHERE        C5.D_E_L_E_T_ != '*' AND A1.D_E_L_E_T_ != '*'
 
 GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C5_VEND1, C5.C5_FECENT, C5.C5_NOTA, Z5.ZZ5_EVENTO, E4.E4_DESCRI";
 	
-	$rs = $conn->execute ( $retornaProdutividadeSQL );
+	$rs = $conn->execute ( $retornaSQL );
 	
 	$num_columns = $rs->Fields->Count ();
 	
