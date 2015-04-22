@@ -25,7 +25,7 @@ include 'funcoes.php';
 // PAR�METROS
 
 ?>
-
+<a name= 'topo'></a>
 	<header class="container-fluid">
 		<div class="row-fluid">
 			<div class="span12">
