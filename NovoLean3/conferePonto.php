@@ -67,15 +67,27 @@ echo "</select><br />";
 echo "<input type='submit' value='Buscar' class = 'btn btn-default'>";
 echo "</div>";
 
-$caminho = "\\AXOR\Ponto";
+$caminho = "P://";
 echo "<div class='well'>";
-$leitor1 = fopen ( "\\AXOR\Ponto\M1\AFD00009000250000494.txt", "r" );
-if ($leitor1 == false)
-	die ( 'Não foi possível abrir o arquivo para leitura.' );
 
-$leitor2 = fopen ( "$caminho\\M2\\AFD00009000250002234.txt", "r" );
+/*$ip = gethostbyname("192.168.117.127");
+$fp = fsockopen($ip, "8008");
+if (!$fp)
+{
+	echo "Unknown";
+} else {
+	echo "Encontrou";
+}*/
+
+// ///192.168.117.127//Ponto/M1/AFD00009000250000494.txt
+$leitor1 = fopen ( "arquivos/ponto/M1/AFD00009000250000494.txt", "r" );
+//$leitor1 = fopen ( "file://axor/Ponto/M1/AFD00009000250000494.txt", "r" );
+if ($leitor1 == false)
+	die ( 'Não foi possível abrir o arquivo 1 para leitura.' );
+
+$leitor2 = fopen ( "arquivos/ponto/M2/AFD00009000250002234.txt", "r" );
 if ($leitor2 == false)
-	die ( 'Não foi possível abrir o arquivo para leitura.' );
+	die ( 'Não foi possível abrir o arquivo 2 para leitura.' );
 
 $pontoCompleto = fopen ( "pontoCompleto.txt", "w+" );
 
