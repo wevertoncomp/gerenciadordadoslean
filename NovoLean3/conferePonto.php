@@ -67,29 +67,15 @@ echo "</select><br />";
 echo "<input type='submit' value='Buscar' class = 'btn btn-default'>";
 echo "</div>";
 
-$caminho = "P://";
-echo "<div class='well'>";
-
-/*$ip = gethostbyname("192.168.117.127");
-$fp = fsockopen($ip, "8008");
-if (!$fp)
-{
-	echo "Unknown";
-} else {
-	echo "Encontrou";
-}*/
-
-// ///192.168.117.127//Ponto/M1/AFD00009000250000494.txt
 $leitor1 = fopen ( "arquivos/ponto/M1/AFD00009000250000494.txt", "r" );
-//$leitor1 = fopen ( "file://axor/Ponto/M1/AFD00009000250000494.txt", "r" );
 if ($leitor1 == false)
-	die ( 'Não foi possível abrir o arquivo 1 para leitura.' );
+	die ( 'Não foi possível abrir o arquivo da M1 para leitura.' );
 
 $leitor2 = fopen ( "arquivos/ponto/M2/AFD00009000250002234.txt", "r" );
 if ($leitor2 == false)
-	die ( 'Não foi possível abrir o arquivo 2 para leitura.' );
+	die ( 'Não foi possível abrir o arquivo M2 para leitura.' );
 
-$pontoCompleto = fopen ( "pontoCompleto.txt", "w+" );
+$pontoCompleto = fopen ( "arquivos/ponto/pontoCompleto.txt", "w+" );
 
 $linha = fgets ( $leitor1 );
 while ( ! feof ( $leitor1 ) ) {
@@ -105,7 +91,6 @@ while ( ! feof ( $leitor2 ) ) {
 		fwrite ( $pontoCompleto, $linha );
 }
 fclose ( $leitor2 );
-
 
 $retornaSQL = "SELECT RA.RA_NOME, RTRIM(RA.RA_PIS), RA.RA_DEMISSA
 				   	FROM SRA010 RA
@@ -124,6 +109,8 @@ while ( ! $rs2->EOF ) {
 	$nome = $fld [0]->value;
 	$pisSQL = $fld [1]->value;
 	echo "<h3>Nome: $nome <br/> PIS: $pisSQL </h3><br />";
+	echo "Ultima atualização do arquivo (M1): ".date("d/m/Y H:i:s", filemtime("arquivos/ponto/M1/AFD00009000250000494.txt"));
+	echo "<br/>Ultima atualização do arquivo (M2): ".date("d/m/Y H:i:s", filemtime("arquivos/ponto/M2/AFD00009000250002234.txt"));
 	
 	/*
 	 * $contadorDia = 1; do { fseek($pontoCompleto, 0); while(!feof($pontoCompleto)) { $linha = fgets($pontoCompleto); $pisTXT = substr($linha, 23, 11); if (strcmp($pisTXT, $pisSQL) == 0) { $contadorTXT = substr($linha, 0, 10); $diaTXT = substr($linha, 10, 2); $mesTXT = substr($linha, 12, 2); $anoTXT = substr($linha, 14, 4); $hora = substr($linha, 18, 2); $minuto = substr($linha, 20, 2); if (($contadorDia == (int)$diaTXT) && ($mesTXT == $mesSelecionado)) echo "Contador: $contadorTXT Data: $diaTXT/$mesTXT/$anoTXT Horario: $hora:$minuto PIS: $pisTXT <br />"; } } $contadorDia++; } while ($contadorDia <= 31);
@@ -195,7 +182,7 @@ $rs2 = null;
 $conn->Close ();
 $conn = null;
 
-fclose ( $pontoCompleto );
-unlink ( $pontoCompleto );
+fclose ($pontoCompleto);
+unlink ("arquivos/ponto/pontoCompleto.txt");
 echo "</div>";
 ?>
