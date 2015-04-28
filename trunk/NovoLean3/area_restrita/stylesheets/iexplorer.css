@@ -1,0 +1,9 @@
+#smart-login-actions input{margin-top:0px;}
+#smart-login-actions input{ 
+filter: progid:DXImageTransform.Microsoft.Alpha(opacity=80);
+-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=80)";}
+#smart-login-actions input:hover{
+filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=100)";}
+#username.placeholder, .password.placeholder {color: #9c9c9c !important;}
+#username:focus, #password:focus{background-color:#F9F9F9 !important; }
