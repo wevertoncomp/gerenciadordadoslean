@@ -104,7 +104,7 @@
 					<fieldset id="smart-login-fields">
 						<input id="login" name="login" type="text" placeholder="Usuário ou e-mail" required>
 						<br/>
-						<input id="senha" name="senha" type="password" placeholder="Senha" required>
+						<!-- <input id="senha" name="senha" type="password" placeholder="Senha" required> -->
 					</fieldset>
 					<!-- <span class="password-reset"><a href="#">Esqueceu sua senha?</a></span> --><br/><br/><br/>
 					<!-- <span class="cookie"><input type="checkbox" value="true">Manter conectado</span> -->
