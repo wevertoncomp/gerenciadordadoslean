@@ -13,10 +13,10 @@ $login = $_POST['login'];
 		--AND senha = '".md5($senha)."' AND (nivel = 3 OR nivel = 1) AND liberado = 1
 		");*/
 
-$retornaSQL = "SELECT RA.RA_MAT
+$retornaSQL = "	SELECT RA.RA_MAT
 				FROM SRA010 RA
 				WHERE RA.RA_DEMISSA = '' AND RA.RA_CATFUNC = 'M' AND RA.RA_MAT = RA.RA_XENCAR
-				AND RA.RA_MAT = '$login'";
+				AND RA.RA_MAT = '001723'";
 
 $rs = $conn->execute ( $retornaSQL );
 $num_columns = $rs->Fields->Count ();
@@ -27,6 +27,7 @@ for($i = 0; $i < $num_columns; $i ++) {
 
 while ( ! $rs->EOF ) {
  $login = $fld1 [0]->value;
+ echo $login;
 $rs->MoveNext ();
 }
 

@@ -16,7 +16,7 @@ $data = $_POST ['dia'];
 
 // Combobox da data
 
-$instrucaoSQL = "SELECT TOP 10 Z8.ZZ8_DATA AS Dia, convert(VARCHAR, convert(DATE, Z8.ZZ8_DATA, 103), 103) AS DiaFormatado FROM ZZ8010 Z8 
+$instrucaoSQL = "SELECT TOP 10 Z8.ZZ8_DATA AS Dia, convert(VARCHAR, convert(DATE, Z8.ZZ8_DATA, 103), 103) AS DiaFormatado FROM ZZ8010 Z8 WITH (NOLOCK)
 				 GROUP BY Z8.ZZ8_DATA
 				 ORDER BY Z8.ZZ8_DATA DESC";
 $rs = $conn->execute ( $instrucaoSQL );
@@ -62,13 +62,18 @@ echo "</div>";
 $instrucaoSQL = "SELECT 
 				 NR.NNR_CODIGO AS CODIGO, 
 				 NR.NNR_DESCRI AS DESCRICAO,
-				 (SELECT TOP 1 Z8.ZZ8_TOTAL FROM ZZ8010 Z8 WHERE NR.NNR_CODIGO = Z8.ZZ8_LOCAL AND Z8.ZZ8_DATA = '$data' AND Z8.D_E_L_E_T_<> '*') AS HORAS
-				 FROM NNR010 NR
+				 (SELECT TOP 1 Z8.ZZ8_TOTAL FROM ZZ8010 Z8 WITH (NOLOCK) WHERE NR.NNR_CODIGO = Z8.ZZ8_LOCAL AND Z8.ZZ8_DATA = '$data' AND Z8.D_E_L_E_T_<> '*') AS HORAS
+				 FROM NNR010 NR WITH (NOLOCK)
 				 WHERE NR.NNR_DESCRI LIKE '%- TRANSITO%'
 				 AND NR.NNR_DESCRI LIKE '%PRODUCAO%'
 				 --AND NR.NNR_DESCRI LIKE '%MONTAGEM 2%'
 				 AND NR.NNR_CODIGO <> 'RXR-TR'
 				 AND NR.NNR_CODIGO <> 'SOM-TR'
+				 AND NR.NNR_CODIGO <> 'MET-TR'
+				 AND NR.NNR_CODIGO <> 'PRE-TR'
+				 AND NR.NNR_CODIGO <> 'MO6-TR'
+				 AND NR.NNR_CODIGO <> 'INJ-TR'
+				 AND NR.NNR_CODIGO <> 'PIN-TR'
 				 ORDER BY NR.NNR_DESCRI";
 $rs = $conn->execute ( $instrucaoSQL );
 
@@ -115,7 +120,7 @@ while ( ! $rs->EOF ) {
 	
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Produto</th><th>Tempo Unitário</th><th>Qtd Produzida</th><th>Tempo Ideal</th><th>Produtividade</th></tr>";
 	
-	$retornaProdutividadeSQL = "SELECT D3.D3_COD, Z9.ZZ9_TEMPOP, D3.D3_QUANT, Z9.ZZ9_QTDOPE FROM SD3010 D3
+	$retornaProdutividadeSQL = "SELECT D3.D3_COD, Z9.ZZ9_TEMPOP, D3.D3_QUANT, Z9.ZZ9_QTDOPE FROM SD3010 D3 WITH (NOLOCK)
 	
 	INNER JOIN ZZ9010 Z9 ON D3.D3_COD = Z9.ZZ9_PRODUT
 	

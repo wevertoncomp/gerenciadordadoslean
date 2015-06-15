@@ -57,7 +57,7 @@
   <!-- Default panel contents -->
   <div class="panel-heading">Pedidos</div>
   <div class="panel-body">
-    	<a href='?pg=faltasEmPedidos2'>
+    	<a href='?pg=faltasEmPedidos3'>
 		<button type="button" class="btn btn-default btn-lg">
 			Faltas em Pedidos
 		</button></a>
