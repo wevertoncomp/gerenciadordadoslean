@@ -1,19 +1,22 @@
 <?php 
 // ob_end_flush();
 $conn->open ( $connStr );
-$mostrar = "Faltantes";
 $item = 0;
 
 echo "<div class='well'>";
 echo "<h4>Faltas em Pedidos que estão em Separação e Conferência</h4><hr>";
 
 // echo "<form action='index.php?area=produtividadeDiaria&data=$dia&setor=$setor' method = 'get'>";
-echo "<form action='?pg=faltasEmPedidos2' method = 'post'>";
+echo "<form action='?pg=faltasEmPedidos3' method = 'post'>";
 echo "<input type='hidden' name='acao' value='enviar'>";
 echo "<span><b>Informe a ordem que deseja visualizar: </b></span>";
 echo "<br/>";
 
 $ordenacao = $_POST ['ordenacao'];
+$pedidosAteODia = $_POST['checkboxDia'];
+$dataAtual = date('Ymd');
+$dataAtualFormatada = date('d/m/Y');
+$diaSemana = date('D');
 
 echo "<select name='ordenacao'>";
 if (isset ( $ordenacao )) {
@@ -41,6 +44,16 @@ echo "<option value='Conferencia'>Conferência</option>";
 echo "<option value='Todos'>Todos</option>";
 
 echo "</select><br />";
+
+echo "<div class='checkbox'>";
+echo "<label>";
+if ($pedidosAteODia == 'S') {
+	echo "<input type='checkbox' name='checkboxDia' value = 'S' checked> Mostrar somente pedidos do próximo dia, do dia e atrasados";
+} else {
+	echo "<input type='checkbox' name='checkboxDia' value = 'S'> Mostrar somente pedidos do próximo dia, do dia e atrasados";
+}
+echo "</label>";
+echo "</div>";
 
 echo "<input type='submit' value='Buscar'>";
 echo "</div>";
@@ -154,7 +167,7 @@ echo "</div>";
 if (isset ( $estado ) && isset ( $ordenacao )) {
 	echo "<div class='well'>";
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Pedido</th><th>Cliente</th><th>Data Prevista</th><th>Evento</th><th>Produto</th>";
-	echo "<!--<th>Qtd Vendida</th><th>Qtd Reservada</th>--><th>Falta</th><th>Local Produção</th><th>Status</th><th>Estoque</th><th>Trânsito</th><th>+</th></tr>";
+	echo "<!--<th>Qtd Vendida</th><th>Qtd Reservada</th>--><th>Falta</th><th>Local Produção</th><th>Estoque</th><th>Trânsito</th><th>+</th></tr>";
 	
 	// $ordenacao = "local";
 	
@@ -174,7 +187,18 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 		$queryEstado = "(C5.C5_EVENTO = '6' OR C5.C5_EVENTO = '5')";
 	}
 	
-	$retornaProdutividadeSQL = "DECLARE @consultaSoMeta VARCHAR(1);
+	if ($pedidosAteODia == 'S') {
+		if ($diaSemana == "Fri") {
+			$acrescimoDias = 3;
+		} else {
+			$acrescimoDias = 1;
+		}
+		$queryData = "AND C5.C5_FECENT <= $dataAtual + $acrescimoDias";
+	} else {
+		$queryData = null;
+	}
+	
+	$retornaSQL = "DECLARE @consultaSoMeta VARCHAR(1);
 							DECLARE @filial VARCHAR(4);
 							DECLARE @dataMeta DATE;
 							DECLARE @localEstoque VARCHAR(6);
@@ -216,23 +240,6 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 							        				AND B2.B2_FILIAL = '0101'
 							        	   )
 							        ,0) AS TransitoDasAreas,
-							        ISNULL(CASE(@consultaSoMeta) 
-							        			WHEN '1' THEN ( SELECT TOP 1 CASE(ZZB_DTMETA) WHEN @dataMeta THEN 'NAO' ELSE 'SIM' END 
-															    FROM ZZB010 ZZB WITH (NOLOCK)
-															    WHERE ZZB.ZZB_FILIAL = C5.C5_FILIAL
-															 	      AND ZZB.ZZB_NUM = C5.C5_NUM
-													       		      AND ZZB.D_E_L_E_T_ <> '*'
-															          AND ((ZZB.ZZB_DTMETA < @dataMeta
-															                AND (SELECT TOP 1 C5_EVENTO FROM SC5010 WITH (NOLOCK) WHERE C5_FILIAL = ZZB.ZZB_FILIAL AND C5_NUM = ZZB.ZZB_NUM AND D_E_L_E_T_ <> '*') NOT IN ('1','3','4','7','8')
-															                AND (SELECT TOP 1 D2_DOC FROM SD2010 WITH (NOLOCK) WHERE D2_FILIAL = ZZB.ZZB_FILIAL  AND D_E_L_E_T_ <> '*' AND D2_PEDIDO = ZZB.ZZB_NUM GROUP BY D2_PEDIDO,D2_DOC) IS NULL
-															               )
-															               OR
-															               (ZZB.ZZB_DTMETA = @dataMeta)
-															              )
-															  )
-												ELSE '' 
-										   END
-									,'') AS PedidoEstaAtrasadoNaMeta,
 									C5.C5_CONDPAG AS CondicaoPagamento
 							                                                               
 							FROM SC5010 C5 WITH (NOLOCK)
@@ -247,39 +254,11 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 									AND $queryEstado
 									AND (C6.C6_RESERVA = '' OR C6.C6_QTDRESE < C6.C6_QTDVEN)
 									AND C5.C5_FILIAL = @filial
-									AND (
-											(@consultaSoMeta = '1' AND  C5.C5_NUM IN (SELECT ZZB.ZZB_NUM
-																					  FROM ZZB010 ZZB WITH (NOLOCK)
-																					  WHERE ZZB.ZZB_FILIAL = C5.C5_FILIAL
-																							AND ZZB.D_E_L_E_T_ <> '*'
-																							AND ((ZZB.ZZB_DTMETA < @dataMeta 
-																								  AND (SELECT TOP 1 C5_EVENTO 
-																								   	   FROM SC5010 WITH (NOLOCK)
-																									   WHERE 	C5_FILIAL = ZZB.ZZB_FILIAL 
-																												AND C5_NUM = ZZB.ZZB_NUM 
-																												AND D_E_L_E_T_ <> '*'
-																									  ) NOT IN ('1','3','4','7','8') 
-																								  AND (SELECT TOP 1 D2_DOC  
-																									   FROM SD2010 WITH (NOLOCK)
-																									   WHERE 	D2_FILIAL = ZZB.ZZB_FILIAL  
-																												AND D_E_L_E_T_ <> '*' 
-																												AND D2_PEDIDO = ZZB.ZZB_NUM 
-																									   GROUP BY D2_PEDIDO,D2_DOC
-																									  ) IS NULL
-																						         )
-																						         OR
-																						         (ZZB.ZZB_DTMETA = @dataMeta)
-							           															)
-							
-																					 )
-											)
-											OR
-											(@consultaSoMeta = '2')
-										)	
+									$queryData
 									
 							$orderBy";
 	
-	$rs = $conn->execute ( $retornaProdutividadeSQL );
+	$rs = $conn->execute ( $retornaSQL );
 	
 	$num_columns = $rs->Fields->Count ();
 	
@@ -310,34 +289,27 @@ if (isset ( $estado ) && isset ( $ordenacao )) {
 		} else if ($evento == 5) {
 			$evento = "Em Separação";
 		}
-		
-		if ($qtdVendida == $qtdReservada) {
-			$status = "ok_16x16";
-		} else {
-			$status = "alert_16x16";
-		}
-		
+				
 		$corPagamento = NULL;
 		if ($condicaoPagamento == '001' || $condicaoPagamento == '000') {
 			$corPagamento = '#FFFFFF';
-			echo "A vista";
 		}
 		
-		if ($mostrar == "Todos") {
-			$item ++;
-			echo "<tr><td>$item</td><td>$pedido</td><td>$cliente - $razaoSocial</td><td>$dataPrevista</td>";
-			echo "<td>$evento</td><td>$produto</td><!--<td>$qtdVendida</td><td>$qtdReservada</td>--><td>$falta</td><td>$localProducao</td>";
-			echo "<td><img src = 'img/$status.png'></td><td>$estoque</td><td>$transito</td></tr>";
-		} else if ($mostrar == "Faltantes") {
-			if ($status == "alert_16x16") {
+		if ($dataPrevista == $dataAtualFormatada) {
+			$corData = '#FFD700';
+		} else if ($dataPrevista < $dataAtualFormatada ) {
+			$corData = '#FF4500';
+		} else {
+			$corData = '#90EE90';
+		}
+		
 				$item ++;
-				echo "<tr><td>$item</td><td bgcolor = '#00FF00'>$pedido</td><td>$cliente - $razaoSocial</td><td>$dataPrevista</td>";
+				echo "<tr><td>$item</td><td bgcolor = '#00FF00'>$pedido</td><td>$cliente - $razaoSocial</td><td bgcolor = '$corData'>$dataPrevista</td>";
 				echo "<td>$evento</td><td bgcolor = '#00FF00'>$produto</td><!--<td>$qtdVendida</td><td>$qtdReservada</td>--><td bgcolor = '#00FF00'>$falta</td><td bgcolor = '#00FF00'>$localProducao</td>";
-				echo "<td><img src = 'img/$status.png'></td><td>$estoque</td><td>$transito</td>";
+				echo "<td>$estoque</td><td>$transito</td>";
 				//echo "<td><button type='button' class='btn btn-primary' data-toggle='modal' data-target='.bs-example-modal-lg'>+</button></td>";
 				echo "</tr>";
-			}
-		}
+
 		$rs->MoveNext ();
 	}
 	

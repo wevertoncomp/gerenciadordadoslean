@@ -1,13 +1,18 @@
 <?
 session_start();
-if(!isset($_SESSION['login_session']) AND !isset($_SESSION['senha_session'])){
+/*if(!isset($_SESSION['login_session']) AND !isset($_SESSION['senha_session'])){
+	header("location: index.php");
+	exit;
+}*/
+
+if(!isset($_SESSION['login_session'])){
 	header("location: index.php");
 	exit;
 }
 
 $pagina = $_GET['pg'];
 $login = $_SESSION['login_session'];
-$senha = $_SESSION['senha_session'];
+//$senha = $_SESSION['senha_session'];
 
 if (!isset($pagina)){
 	$pagina = "principal";
@@ -15,19 +20,6 @@ if (!isset($pagina)){
 
 include '../conexao.php';
 
-/* Pegando dados para gravar o LOG */
-$sql_usuário = mysql_query("SELECT U.idUsuario AS idUsuario, U.nivel AS nivelAcesso
-		FROM st_usuarios U WHERE U.login = '$login' AND U.senha = '".md5($senha)."' AND (U.nivel = 3 OR U.nivel = 1) AND U.liberado = 1");
-
-while ($array = mysql_fetch_array($sql_usuário)){
-	$idUsuario = $array['idUsuario'];
-	$nivelAcesso = $array['nivelAcesso'];
-}
-$ipUsuario = $_SERVER['REMOTE_ADDR'];
-$server = $_SERVER['SERVER_NAME'];
-$endereco = $_SERVER ['REQUEST_URI'];
-$enderecoCompleto = "http://" . $server . $endereco;
-/* Fim dos dados para o LOG */
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -89,46 +81,6 @@ $enderecoCompleto = "http://" . $server . $endereco;
 		});
 	});
 	</script>
-
-	<script type="text/javascript">
-	$(function(){
-	    $('#container').highcharts({
-	        chart: {
-	            plotBackgroundColor: null,
-	            plotBorderWidth: null,
-	            plotShadow: false
-	        },
-	        title: {
-	            text: 'Meta de Vendas'
-	        },
-	        tooltip: {
-	    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-	        },
-	        plotOptions: {
-	            pie: {
-	                allowPointSelect: true,
-	                cursor: 'pointer',
-	                dataLabels: {
-	                    enabled: true,
-	                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-	                    style: {
-	                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-	                    }
-	                }
-	            }
-	        },
-	        series: [{
-	            type: 'pie',
-	            name: 'Browser share',
-	            data: [
-	                ['Vendido',   45.0],
-	                ['Falta',       26.8]
-	            ]
-	        }]
-	    });
-	});
-	
-	</script>
   </head>
 
   <body>
@@ -189,6 +141,5 @@ $enderecoCompleto = "http://" . $server . $endereco;
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/docs.min.js"></script>
-    <?php $insertLog = mysql_query("INSERT st_usuarioslog(idUsuario, ip, endereco) VALUES ($idUsuario, '$ipUsuario', '$enderecoCompleto')");?>
   </body>
 </html>

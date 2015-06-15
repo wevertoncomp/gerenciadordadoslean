@@ -12,7 +12,8 @@ echo "</div>";
 	echo "<div class='well'>";
 	
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Filial</th><th>Pedido</th>";
-	echo "<th>Pedido Pradolux</th><th>Cliente</th><th>Razão Social</th><th></th><th>Evento</th><th>Cond. Pag.</th></tr>";
+	echo "<th>Pedido Pradolux</th><th>Cliente</th><th>Razão Social</th><th></th><th>Evento</th><th>Cond. Pag.</th>";
+	echo "<th>Data Prevista</th><th>%</th></tr>";
 	
 	$retornaSQL = "SELECT C5.C5_FILIAL AS Filial,
        C5.C5_NUM AS Pedido,
@@ -20,13 +21,13 @@ echo "</div>";
        C5.C5_CLIENTE AS Cliente,
        A1.A1_NOME AS RazaoSocial,
        C5.C5_VEND1 AS Vendedor,
-       C5.C5_FECENT AS DataPrevista,
-       --(SELECT SUM(C6_QTDVEN*C6_PRCVEN) FROM SC6010 WHERE C6_NUM = C5.C5_NUM) AS ValorSemImpostos,
+       convert(VARCHAR, convert(DATE, C5.C5_FECENT, 103), 103) AS DataPrevista,
        --(SELECT Z5.ZZ5_EVENTO FROM ZZ5010 Z51 WHERE Z51.ZZ5_PEDIDO = C5.C5_NUM AND Z51.R_E_C_N_O_ = 
        --        (SELECT MAX(Z52.R_E_C_N_O_) FROM ZZ5010 Z52 WHERE Z52.ZZ5_PEDIDO = C5.C5_NUM)) AS EVENTO,
        --Z5.R_E_C_N_O_, 
        RTRIM(ISNULL(Z5.ZZ5_EVENTO,'Não Cadastrado')) AS Evento,
-	   E4.E4_DESCRI AS CondicaoPagamento
+	   E4.E4_DESCRI AS CondicaoPagamento,
+	   (SELECT SUM(C6_QTDVEN*C6_PRCVEN) FROM SC6010 WHERE C6_NUM = C5.C5_NUM) AS ValorSemImpostos
 
 FROM SC5010 C5
 
@@ -59,6 +60,9 @@ GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C
 	$tempoIdealTotal = 0;
 	$item = 0;
 	
+	$dataAtual = date('d/m/Y');
+	$metaDiaria = '115000';
+	
 	while ( ! $rs->EOF ) {
 	
 		$filial = $fld [0]->value;
@@ -70,9 +74,13 @@ GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C
 		$dataPrevista = $fld [6]->value;
 		$evento = $fld [7]->value;
 		$condicaoPagamento = $fld [8]->value;
+		$valorSemImpostos = $fld [9]->value;
+		
 		$eventoFormatado = NULL;
 		$corEvento = '#FFF';
 		$item++;
+		$porcentagemMeta = ($valorSemImpostos / $metaDiaria)*100;
+
 		
 		if ($evento == "APROVADA SEPARACAO") {
 			$eventoFormatado = "Aguardando Separação";
@@ -89,9 +97,16 @@ GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C
 		}else{
 			$eventoFormatado = "Não cadastrado";
 		}
+		
+		$corData = null;
+		if ($dataPrevista <= $dataAtual) {
+			$corData = '#EEB049';
+		}
 	
 		echo "<tr><td>$item</td><td>$filial</td><td>$pedido</td><td>$pedidoPradolux</td>";
-		echo "<td>$cliente</td><td>$razaoSocial</td><td bgcolor='$corEvento'></td><td>$eventoFormatado</td><td>$condicaoPagamento</td></tr>";
+		echo "<td>$cliente</td><td>$razaoSocial</td><td bgcolor='$corEvento'></td><td>$eventoFormatado</td><td>$condicaoPagamento</td>";
+		echo "<td bgcolor = '$corData'>$dataPrevista</td><td bgcolor = '$corData'>". number_format($porcentagemMeta, 1, ',', '.'). "%</td>";
+		echo "</tr>";
 		$rs->MoveNext ();
 	}
 	
