@@ -10,8 +10,28 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-datepicker.css" rel="stylesheet">
     <script src="js/jquery-1.11.2.min.js"></script>
+
+	<script src="Chart.min.js"></script>
+	
+	    <style type="text/css">
+
+    .box {
+        margin: 0px auto;
+        width: 70%;
+    }
+
+    .box-chart {
+        width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+    </style> 
     
-   
+        <script type="text/javascript">
+        var randomnb = function(){ return Math.round(Math.random()*300)};
+    </script>  
+    
   </head>
   <body>
  
@@ -25,6 +45,7 @@ include 'funcoes.php';
 // PAR�METROS
 
 ?>
+
 <a name= 'topo'></a>
 	<header class="container-fluid">
 		<div class="row-fluid">
