@@ -57,6 +57,7 @@ echo "</div>";
 
 echo "<input type='submit' value='Buscar'>";
 echo "</div>";
+
 /*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
 
 echo "<div class='well'>";

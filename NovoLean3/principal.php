@@ -50,6 +50,11 @@
 		<button type="button" class="btn btn-default btn-lg">
 			Estoque Injetados
 		</button></a>
+		
+		<a href='?pg=opsAbertasPorArea'>
+		<button type="button" class="btn btn-default btn-lg">
+			Ops abertas por área
+		</button></a>
 	</div>
 </div>
 
@@ -69,6 +74,10 @@
 		<button type="button" class="btn btn-default btn-lg">
 			Consulta Itens em Pedidos
 		</button></a>
+		<a href='?pg=vendaItemMensal'>
+		<button type="button" class="btn btn-default btn-lg">
+			Venda de item mensal
+		</button></a>
   </div>
 </div>
 
@@ -80,6 +89,17 @@
     	<a href='?pg=demandaMensalMP'>
 		<button type="button" class="btn btn-default btn-lg">
 			Demanda Mensal de MP
+		</button></a>
+  </div>
+</div>
+
+<div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Indicadores</div>
+  <div class="panel-body">
+    	<a href='?pg=mediaDiasEntregaBaseada7Dias'>
+		<button type="button" class="btn btn-default btn-lg">
+			Entrega baseada em 7 dias
 		</button></a>
   </div>
 </div>

@@ -61,7 +61,7 @@ $instrucaoSQL = "SELECT
 				 AND NR.NNR_CODIGO <> 'RXR-TR'
 				 AND NR.NNR_CODIGO <> 'SOM-TR'
 				 AND NR.NNR_CODIGO <> 'MET-TR'
-				 AND NR.NNR_CODIGO <> 'SDU-TR'
+				 --AND NR.NNR_CODIGO <> 'SDU-TR'
 				 --AND NR.NNR_CODIGO <> 'SDT-TR'
 				 AND NR.NNR_CODIGO <> 'PIN-TR'
 				 AND Z8.ZZ8_DATA BETWEEN '$dataInicial' AND '$dataFinal'
