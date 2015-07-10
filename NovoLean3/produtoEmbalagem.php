@@ -13,7 +13,7 @@ echo "</div>";
 	echo "<tr>";
 	echo "<th>Produto</th>";
 	echo "<th>Qtd. Embalagem</th>";
-	echo "<th>Caixa</th>";
+	echo "<th>Caixa Produto</th>";
 	echo "<th>Caixa Estrut.</th>";
 	echo "<th>Local</th>";
 	echo "<th>Saquinho</th>";
@@ -71,14 +71,27 @@ echo "</div>";
 		$codigoSaquinho 	= $fld [5]->value;
 		$descricaoSaquinho 	= $fld [6]->value;
 		
+		$caixaProd = substr($caixaProduto, 0, 3);
+		$caixaEstrut = substr($caixaEstrutura, 9, 12);
+ 		if ($caixaProd != $caixaEstrut) {
+ 			$corCaixa = "#FF8C00";
+ 		} else {
+ 			$corCaixa = NULL;
+ 		}
+ 		if (empty($codigoSaquinho)) {
+ 			$corSaquinho = "#FF8C00";
+ 		} else {
+ 			$corSaquinho = NULL;
+ 		}
+		
 		echo "<tr>";
 		echo "<td>$codigoProduto</td>";
 		echo "<td>$qtdEmbalagem</td>";
 		echo "<td>$caixaProduto</td>";
-		echo "<td>$caixaEstrutura</td>";
+		echo "<td bgcolor = '$corCaixa'>$caixaEstrutura</td>";
 		echo "<td>$armazem</td>";
-		echo "<td>$codigoSaquinho</td>";
-		echo "<td>$descricaoSaquinho</td>";
+		echo "<td bgcolor = '$corSaquinho'>$codigoSaquinho</td>";
+		echo "<td bgcolor = '$corSaquinho'>$descricaoSaquinho</td>";
 		echo "</tr>";
 		$rs->MoveNext ();
 	}
