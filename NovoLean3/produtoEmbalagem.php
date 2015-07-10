@@ -35,6 +35,7 @@ echo "</div>";
 							ON B1.B1_COD = G1.G1_COD
 							AND G1.G1_COMP LIKE 'MP0050____'
 							AND G1.D_E_L_E_T_ <> '*'
+							AND G1.G1_COMP <> 'MP00500291'
 						LEFT OUTER JOIN SB1010 B1_1
 							ON G1.G1_COMP = B1_1.B1_COD
 						LEFT OUTER JOIN SG1010 G1_1
