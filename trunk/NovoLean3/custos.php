@@ -11,7 +11,7 @@ echo "</div>";
 
 	echo "<div class='well'>";
 	
-	echo "<table class='table table-hover'>";
+	echo "<table class='table table-striped'>";
 	
 	$retornaSQL = "	SELECT 
 
@@ -28,14 +28,13 @@ echo "</div>";
 					B1.B1_UM AS UnidadeMedida,
 					BM.BM_DESC,
 					B1.B1_UPRC AS UltimoPreco,
-					(SELECT 
+					(SELECT AVG(D3.D3_CUSTO1/D3.D3_QUANT)
 					
-					(SUM(D1.D1_CUSTO)/SUM(D1.D1_QUANT))
-					
-					FROM SD1010 D1 WITH (NOLOCK)
-					WHERE D1.D1_COD = B1.B1_COD
-					AND D1.D1_EMISSAO>='20150101'
-					AND D1.D_E_L_E_T_ <> '*') AS CustoMedio
+					FROM SD3010 D3 WITH (NOLOCK)
+					WHERE D3.D3_COD = B1.B1_COD
+					AND D3.D3_EMISSAO>='20150101'
+					AND D3.D_E_L_E_T_ <> '*'
+					AND D3.D3_QUANT <> '0') AS CustoMedio
 					
 					FROM SB1010 B1 WITH (NOLOCK)
 					INNER JOIN SBM010 BM ON B1.B1_GRUPO = BM.BM_GRUPO
@@ -76,10 +75,13 @@ echo "</div>";
 		$custoMedio = $fld [8]->value;
 		$valorAutomatico = $custoAutomatico * $estoque;
 		$valorManual = $custoManual * $estoque;
+		$valorMedio = $custoMedio * $estoque;
 		$valorAutomaticoTotal += $valorAutomatico;
 		$valorManualTotal += $valorManual;
+		$valorMedioTotal += $valorMedio;
 		$valorAutomaticoPorGrupo += $valorAutomatico;
 		$valorManualPorGrupo += $valorManual;
+		$valorMedioPorGrupo += $valorMedio;
 		$estoqueTotal += $estoque;
 		$demandaTotal += $demanda;
 		
@@ -91,13 +93,24 @@ echo "</div>";
 			$corValidacao = NULL;
 		}
 		
+		if (($valorMedio/$valorManual) > 1.5 || ($valorMedio/$valorManual) < 0.5) {
+			$corValidacaoTotal = '#FF0000';
+		} else if (($valorMedio/$valorManual) > 1.1 || ($valorMedio/$valorManual) < 0.9) {
+			$corValidacaoTotal = '#FF8C00';
+		} else {
+			$corValidacaoTotal = NULL;
+		}
+		
 		if (empty($grupo2) || $grupo2 != $grupo) {
-			echo "<tr><th colspan = '7'>Totais</th><th>R$ ". number_format($valorAutomaticoPorGrupo, 0, ',', '.') ."</th>";
-			echo "<th>R$ ". number_format($valorManualPorGrupo, 0, ',', '.') ."</th></tr>";
+			echo "<tr><th colspan = '8'>Totais</th><th>R$ ". number_format($valorAutomaticoPorGrupo, 0, ',', '.') ."</th>";
+			echo "<th>R$ ". number_format($valorManualPorGrupo, 0, ',', '.') ."</th>";
+			echo "<th>R$ ". number_format($valorMedioPorGrupo, 0, ',', '.') ."</th>";
+			echo "<th></th>";
+			echo "</tr>";
 			
-			echo "<tr bgcolor = '#FF8C00'><th colspan = '10'><h3>$grupo</h3></th></tr>";
-			echo "<tr><th>Item</th><th>Produto</th><th>Descrição</th><th>Custo Autom.</th><th>Custo Manual</th><th>Custo Médio</th><th>Ult. Prec</th>";
-			echo "<th>Estoque</th><th>Tot. Aut.</th><th>Tot. Man.</th><th>+</th></tr>";
+			echo "<tr bgcolor = '#FF8C00'><th colspan = '12'><h3>$grupo</h3></th></tr>";
+			echo "<tr><th>Item</th><th>Produto</th><th>Descrição</th><th>Custo STD</th><th>Custo Manual</th><th>Custo Médio</th><th>Ult. Prec</th>";
+			echo "<th>Estoque</th><th>Tot. STD</th><th>Tot. Man.</th><th>Tot. Médio</th><th>+</th></tr>";
 		}
 		$grupo2 = $grupo;
 	
@@ -106,13 +119,22 @@ echo "</div>";
 		echo "<td>".number_format($custoManual, 4, ',', '.')."</td><td>".number_format($custoMedio, 6, ',', '.')."</td><td>".number_format($ultimoPreco, 4, ',', '.')."</td>";
 		echo "<td>". number_format($estoque, 0, ',', '.')." $unidadeMedida</td><td>R$ ".number_format($valorAutomatico, 2, ',', '.')."</td>";
 		echo "<td>R$ ".number_format($valorManual, 2, ',', '.')."</td>";
+		echo "<td bgcolor = '$corValidacaoTotal'>R$ ".number_format($valorMedio, 2, ',', '.')."</td>";
 		echo "<td><a href = 'index.php?pg=entradaNotasPorMateriaPrima&produto=$codigo'>+</a></td></tr>";
 		$rs->MoveNext ();
 	}
 	
 	echo "<tr><td></td><td></td><td></td><td></td><td></td><td></td><th>Totais</th>";
 	echo "<th>". number_format($estoqueTotal, 0, ',', '.')." $unidadeMedida</th><th>R$ ". number_format($valorAutomaticoTotal, 0, ',', '.') ."</th>";
-	echo "<th>R$ ". number_format($valorManualTotal, 0, ',', '.') ."</th></tr>";
+	echo "<th>R$ ". number_format($valorManualTotal, 0, ',', '.') ."</th><th>R$ ". number_format($valorMedioTotal, 0, ',', '.') ."</th>";
+	echo "</tr>";
+	
+	echo "<tr><td></td><td></td><td></td><td></td><td></td><th colspan = '2'>% Erro em relação ao manual</th>";
+	echo "<th></th>";
+	echo "<th>". number_format(($valorAutomaticoTotal/$valorManualTotal)*100, 2, ',', '.') ." %</th>";
+	echo "<th></th>";
+	echo "<th>". number_format(($valorMedioTotal/$valorManualTotal)*100, 2, ',', '.') ." %</th>";
+	echo "</tr>";
 	
 	$rs->MoveNext ();
 	$rs->Close ();

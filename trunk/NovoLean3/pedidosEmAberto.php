@@ -5,12 +5,7 @@ $horas = 0;
 echo "<div class='well'>";
 echo "<h4>Pedidos em aberto</h4><hr>";
 echo "</div>";
-
-
-
-
 	echo "<div class='well'>";
-	
 	echo "<table class='table table-hover'><tr><th>Item</th><th>Filial</th><th>Pedido</th>";
 	echo "<th>Pedido Pradolux</th><th>Cliente</th><th>Razão Social</th><th></th><th>Evento</th><th>Cond. Pag.</th>";
 	echo "<th>Data Prevista</th><th>%</th></tr>";
@@ -61,7 +56,7 @@ GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C
 	$item = 0;
 	
 	$dataAtual = date('d/m/Y');
-	$metaDiaria = '115000';
+	$metaDiaria = '90000';
 	
 	while ( ! $rs->EOF ) {
 	
@@ -106,6 +101,7 @@ GROUP BY C5.C5_NUM, C5.C5_FILIAL, C5.C5_XPEDORI, C5.C5_CLIENTE, A1.A1_NOME, C5.C
 		echo "<tr><td>$item</td><td>$filial</td><td>$pedido</td><td>$pedidoPradolux</td>";
 		echo "<td>$cliente</td><td>$razaoSocial</td><td bgcolor='$corEvento'></td><td>$eventoFormatado</td><td>$condicaoPagamento</td>";
 		echo "<td bgcolor = '$corData'>$dataPrevista</td><td bgcolor = '$corData'>". number_format($porcentagemMeta, 1, ',', '.'). "%</td>";
+		echo "<td><button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='top' title='Tooltip on top'>+</button></td>";
 		echo "</tr>";
 		$rs->MoveNext ();
 	}

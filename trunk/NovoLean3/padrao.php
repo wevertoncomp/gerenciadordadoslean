@@ -1,5 +1,4 @@
 <?php
-//ob_end_flush();
 $conn->open ( $connStr );
 echo "<div class='well'>";
 echo "<h4>Titulo</h4><hr>";

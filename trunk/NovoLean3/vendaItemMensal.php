@@ -53,13 +53,14 @@ echo "<input type='submit' value='Buscar'>";
 echo "</div>";
 
 echo "<div class='well'>";
-echo "<table class='table table-hover'><tr><th>Mês</th><th>Código</th><th>Quantidade</th></tr>";
+echo "<table class='table table-hover'><tr><th>Ano</th><th>Mês</th><th>Código</th><th>Quantidade</th></tr>";
 
 $instrucaoSQL = "	SELECT
 
 					DATEPART(mm,F2.F2_EMISSAO),
 					D2.D2_COD,
-					SUM(D2.D2_QUANT) AS QuantidadeTotal
+					SUM(D2.D2_QUANT) AS QuantidadeTotal,
+					DATEPART(yy,F2.F2_EMISSAO)
 					
 					FROM SF2010 AS F2 WITH (NOLOCK)
 					INNER JOIN SD2010 D2 ON F2.F2_DOC = D2.D2_DOC
@@ -67,12 +68,12 @@ $instrucaoSQL = "	SELECT
 					WHERE F2.D_E_L_E_T_ <> '*' 
 					AND (F2_FILIAL = '0101' OR F2_FILIAL = '0201')
 					AND F2_CLIENTE != '003718'
-					AND F2_EMISSAO BETWEEN '20150101' AND '20150531'
+					AND F2_EMISSAO BETWEEN '20140601' AND '20151231'
 					AND (SELECT COUNT(E1_PARCELA) FROM SE1010 WHERE E1_NUM = F2.F2_DOC) > 0 AND F2_SERIE = '1' 
 					AND D2.D2_COD = '$produto'
 					
 					GROUP BY D2.D2_COD, DATEPART(yy,F2.F2_EMISSAO), DATEPART(mm,F2.F2_EMISSAO)
-					ORDER BY DATEPART(mm,F2.F2_EMISSAO) ASC";
+					ORDER BY DATEPART(yy,F2.F2_EMISSAO), DATEPART(mm,F2.F2_EMISSAO) ASC";
 
 $rs = $conn->execute ( $instrucaoSQL );
 
@@ -89,8 +90,9 @@ while ( ! $rs->EOF ) {
 	$mes = $fld [0]->value;
 	$codigo = $fld [1]->value;
 	$qtd = $fld [2]->value;
+	$ano = $fld [3]->value;
 	
-	echo "<tr><td>$mes</td><td>$codigo</td><td>$qtd</td></tr>";
+	echo "<tr><td>$ano</td><td>$mes</td><td>$codigo</td><td>$qtd</td></tr>";
 	$rs->MoveNext ();
 }
 
