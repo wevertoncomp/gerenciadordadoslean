@@ -1,7 +1,7 @@
 <?php
 $conn->open ( $connStr );
 echo "<div class='well'>";
-echo "<h4>Titulo</h4><hr>";
+echo "<h4>Relação Produto/Embalagem</h4><hr>";
 echo "</div>";
 
 
