@@ -1,3 +1,13 @@
+<style type="text/css">
+	th {
+	  text-align: center;
+	}
+	
+	tr {
+	text-align: center;
+</style> 
+
+
 <?php
 $conn->open ( $connStr );
 echo "<div class='well'>";
@@ -96,6 +106,11 @@ echo "</div>";
 		
 		$total = ($kanbanVD + $kanbanAM + $kanbanVM) * $qtdPorKanban;
 		$caixasNecessarias = ($total / $qtdEmbalagem);
+		if ($total % $qtdEmbalagem != 0) {
+			$corCaixasNecessarias = "#FF8C00";
+		} else {
+			$corCaixasNecessarias = NULL;
+		}
 		
 
 		$caixaProd = substr($caixaProduto, 0, 3);
@@ -118,11 +133,13 @@ echo "</div>";
  		} else {
  			$corVerificacaoKanban = NULL;
  		}
+ 		
+ 		$caixaEstrutura = substr($caixaEstrutura, 4, 12);
 		
 		echo "<tr>";
 		echo "<td>$codigoProduto</td>";
 		echo "<td>$qtdEmbalagem</td>";
-		echo "<td>$caixaProduto</td>";
+		echo "<td align = 'left'>$caixaProduto</td>";
 		echo "<td bgcolor = '$corCaixa'>$caixaEstrutura</td>";
 		echo "<td>$armazem</td>";
 		echo "<td bgcolor = '$corSaquinho'>$codigoSaquinho</td>";
@@ -133,12 +150,10 @@ echo "</div>";
 		echo "<td>$kanbanVM</td>";
 		echo "<td>$qtdPorKanban</td>";
 		echo "<td>$total</td>";
-		echo "<td>$caixasNecessarias</td>";
+		echo "<td bgcolor = '$corCaixasNecessarias'>$caixasNecessarias</td>";
 		echo "</tr>";
 		$rs->MoveNext ();
 	}
-	
-	//$rs->MoveNext ();
 
 echo "</tr></table>";
 echo "</div>";
