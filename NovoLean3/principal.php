@@ -104,6 +104,17 @@
   </div>
 </div>
 
+<div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Verificações</div>
+  <div class="panel-body">
+    	<a href='?pg=produtoEmbalagem'>
+		<button type="button" class="btn btn-default btn-lg">
+			Relação produto / embalagem
+		</button></a>
+  </div>
+</div>
+
 
 <div class="panel panel-primary">
   <!-- Default panel contents -->
