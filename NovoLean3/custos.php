@@ -108,6 +108,8 @@ echo "</div>";
 			echo "<th></th>";
 			echo "</tr>";
 			
+			$valorManualPorGrupo = 0;
+			
 			echo "<tr bgcolor = '#FF8C00'><th colspan = '12'><h3>$grupo</h3></th></tr>";
 			echo "<tr><th>Item</th><th>Produto</th><th>Descrição</th><th>Custo STD</th><th>Custo Manual</th><th>Custo Médio</th><th>Ult. Prec</th>";
 			echo "<th>Estoque</th><th>Tot. STD</th><th>Tot. Man.</th><th>Tot. Médio</th><th>+</th></tr>";
@@ -123,8 +125,16 @@ echo "</div>";
 		echo "<td><a href = 'index.php?pg=entradaNotasPorMateriaPrima&produto=$codigo'>+</a></td></tr>";
 		$rs->MoveNext ();
 	}
+
+	echo "<tr><th colspan = '8'>Totais</th><th>R$ ". number_format($valorAutomaticoPorGrupo, 0, ',', '.') ."</th>";
+	echo "<th>R$ ". number_format($valorManualPorGrupo, 0, ',', '.') ."</th>";
+	echo "<th>R$ ". number_format($valorMedioPorGrupo, 0, ',', '.') ."</th>";
+	echo "<th></th>";
+	echo "</tr>";
+	echo "<tr><td colspan = '11'></td></tr>";
+	echo "<tr><td colspan = '11'></td></tr>";
 	
-	echo "<tr><td></td><td></td><td></td><td></td><td></td><td></td><th>Totais</th>";
+	echo "<tr><td></td><td></td><td></td><td></td><td></td><td></td><th>Total geral</th>";
 	echo "<th>". number_format($estoqueTotal, 0, ',', '.')." $unidadeMedida</th><th>R$ ". number_format($valorAutomaticoTotal, 0, ',', '.') ."</th>";
 	echo "<th>R$ ". number_format($valorManualTotal, 0, ',', '.') ."</th><th>R$ ". number_format($valorMedioTotal, 0, ',', '.') ."</th>";
 	echo "</tr>";
