@@ -12,7 +12,7 @@
 <script>window.jQuery || document.write('<script src="js/jquery-1.11.2.min.js"><\/script>')</script>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-datepicker.css" rel="stylesheet">
     <script src="js/jquery-1.11.2.min.js"></script>
 
