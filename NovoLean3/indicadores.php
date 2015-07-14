@@ -3,9 +3,9 @@
 $conn->open ( $connStr );
 $horas = 0;
 echo "<div class='well'>";
-echo "<h4>Produtividade Diária</h4><hr>";
+echo "<h4>Indicadores</h4><hr>";
 
-echo "<form action='?pg=produtividadeEntreDatas' method = 'post' class='form-inline'>";
+echo "<form action='?pg=indicadores' method = 'post' class='form-inline'>";
 echo "<input type='hidden' name='acao' value='enviar'>";
 echo "<span><b>Informe o intervalo de datas que deseja visualizar: </b></span>";
 echo "<br/>";
@@ -18,9 +18,6 @@ $dataFinal = str_replace('-', '', $dataFinal);
 
 $dataInicialFormatada = substr($dataInicial, 6, 2) ."/". substr($dataInicial, 4, 2) ."/". substr($dataInicial, 0, 4);
 $dataFinalFormatada = substr($dataFinal, 6, 2) ."/". substr($dataFinal, 4, 2) ."/". substr($dataFinal, 0, 4);;
-
-//$dataInicial = '20150222';
-//$dataFinal = '20150228';
 
 // TextField
 ?>
@@ -270,6 +267,30 @@ for($i = 0; $i < $num_columns; $i ++) {
 $fld [$i] = $rs->Fields ( $i );
 }
 
+$qtdProducaoINJTRComFiltros		= $fld [0]->value;
+$pesoProducaoINJTRComFiltros	= $fld [1]->value;
+
+/* Quantidade e peso total da produção da INJ-TR */
+$instrucaoSQL = "SELECT 
+				SUM(D3.D3_QUANT) AS Quantidade,
+				SUM(D3.D3_QUANT*B1.B1_PESO) AS PesoEmGramas
+				
+				FROM SD3010 D3
+					INNER JOIN SB1010 B1
+						ON D3.D3_COD = B1.B1_COD
+					
+				WHERE D3.D3_LOCAL = 'INJ-TR' 
+					AND D3.D3_EMISSAO BETWEEN '$dataInicial' AND '$dataFinal'
+					AND D3.D3_TM = '010'";
+
+$rs = $conn->execute ( $instrucaoSQL );
+
+$num_columns = $rs->Fields->Count ();
+
+for($i = 0; $i < $num_columns; $i ++) {
+$fld [$i] = $rs->Fields ( $i );
+}
+
 $qtdProducaoINJTR	= $fld [0]->value;
 $pesoProducaoINJTR	= $fld [1]->value;
 
@@ -277,11 +298,60 @@ echo "</tr></table>";
 
 echo "<div class='well'>";
 echo "<h3>Indicadores Gerais da Pradolux</h3>";
-echo "<p>Horas totais trabalhadas: ";
-echo "<p>Quantidade total de produtos produzidos: ";
-echo "<p>Tempo Ideal de produção dos produtos: ";
-echo "<p>Produtividade:";
-echo "<p>Produção de produto padrão: equivalente a";
+echo "<div class='panel panel-default'>";
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>Produtos Injetados no Porta Palete</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Quantidade: " .number_format($qtdProdutosInjetadosPP, 2, ',', '.');
+echo "		<br/>Peso Total: " .number_format($pesoProdutosInjetadosPP, 2, ',', '.');
+echo "	</div>";
+
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>Produtos no Acabados</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Movimento: R$ " .number_format($valorMovimentoProdutosAcabados, 2, ',', '.');
+echo "		<br/>Estoque: R$ " .number_format($valorProdutosAcabados, 2, ',', '.');
+echo "	</div>";
+
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>Saída de Produtos do Porta Palete para Giro de Estoque</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Quantidade: " .number_format($qtdSaidaPPGiroDeEstoque, 2, ',', '.');
+echo "		<br/>Peso Total: " .number_format($pesoPecasSaidaPPGiroDeEstoque, 2, ',', '.');
+echo "	</div>";
+
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>MPs Requisitadas do Almoxarifado</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Quantidade: " .number_format($valorRequisitadoMP, 2, ',', '.');
+echo "	</div>";
+
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>Não Conformes Injetora</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Quantidade(grandes): " .number_format($qtdNaoConformesGrandesInj, 2, ',', '.');
+echo "		<br/>Peso(grandes): " .number_format($pesoNaoConformesGrandesInj, 2, ',', '.');
+echo "		<br/>";
+echo "		<br/>Quantidade Total: " .number_format($qtdNaoConformesInj, 2, ',', '.');
+echo "		<br/>Peso Total:" .number_format($pesoNaoConformesInj, 2, ',', '.');
+echo "	</div>";
+
+echo "	<div class='panel-heading'>";
+echo "		<h3 class='panel-title'>Produção INJ-TR</h3>";
+echo "	</div>";
+echo "	<div class='panel-body'>";
+echo "		Quantidade(com filtros): " .number_format($qtdProducaoINJTRComFiltros, 2, ',', '.');
+echo "		<br/>Peso(com filtros): " .number_format($pesoProducaoINJTRComFiltros, 2, ',', '.');
+echo "		<br/>";
+echo "		<br/>Quantidade Total: " .number_format($qtdProducaoINJTR, 2, ',', '.');
+echo "		<br/>Peso Total: " .number_format($pesoProducaoINJTR, 2, ',', '.');
+echo "	</div>";
+echo "</div>";
 echo "</div>";
 
 $rs->Close ();
