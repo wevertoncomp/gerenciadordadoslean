@@ -22,12 +22,12 @@ $dataFinalFormatada = substr($dataFinal, 6, 2) ."/". substr($dataFinal, 4, 2) ."
 // TextField
 ?>
 <div class="form-group">
-<label for="dataInicial">Data Inicial</label>
-<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2015-01-01">
+	<label for="dataInicial">Data Inicial</label>
+	<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2015-01-01">
 </div>
 <div class="form-group">
-<label for="dataFinal">Data Final</label>
-<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
+	<label for="dataFinal">Data Final</label>
+	<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
 </div>
 <?php 
 
@@ -295,14 +295,15 @@ $qtdProducaoINJTR	= $fld [0]->value;
 $pesoProducaoINJTR	= $fld [1]->value;
 
 echo "</tr></table>";
-
-echo "<div class='well'>";
-echo "<h3>Indicadores Gerais da Pradolux</h3>";
-echo "<div class='panel panel-default'>";
-echo "	<div class='panel-heading'>";
-echo "		<h3 class='panel-title'>Produtos Injetados no Porta Palete</h3>";
-echo "	</div>";
-echo "	<div class='panel-body'>";
+?>
+<div class='well'>
+<h3>Indicadores Gerais da Pradolux</h3>
+<div class='panel panel-default'>
+	<div class='panel-heading'>
+		<h3 class='panel-title'>Produtos Injetados no Porta Palete</h3>
+	</div>
+	<div class='panel-body'>
+<?php
 echo "		Quantidade: " .number_format($qtdProdutosInjetadosPP, 2, ',', '.');
 echo "		<br/>Peso Total: " .number_format($pesoProdutosInjetadosPP, 2, ',', '.');
 echo "	</div>";
