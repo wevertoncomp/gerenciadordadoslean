@@ -1,5 +1,4 @@
 <?php
-//ob_end_flush();
 $conn->open ( $connStr );
 $horas = 0;
 echo "<div class='well'>";
@@ -19,23 +18,19 @@ $dataFinal = str_replace('-', '', $dataFinal);
 $dataInicialFormatada = substr($dataInicial, 6, 2) ."/". substr($dataInicial, 4, 2) ."/". substr($dataInicial, 0, 4);
 $dataFinalFormatada = substr($dataFinal, 6, 2) ."/". substr($dataFinal, 4, 2) ."/". substr($dataFinal, 0, 4);;
 
-// TextField
 ?>
-<div class="form-group">
-	<label for="dataInicial">Data Inicial</label>
-	<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2015-01-01">
-</div>
-<div class="form-group">
-	<label for="dataFinal">Data Final</label>
-	<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
-</div>
-<?php 
-
-echo "<br />";
-
-echo "<input type='submit' value='Buscar'>";
-echo "</form>";
-
+	<div class="form-group">
+		<label for="dataInicial">Data Inicial</label>
+		<input type="date" class="form-control" name="dataInicial" placeholder="Data Inicial" min="2015-01-01">
+	</div>
+	<div class="form-group">
+		<label for="dataFinal">Data Final</label>
+		<input type="date" class="form-control" name="dataFinal" placeholder="Data Final">
+	</div>
+	<br />
+	<input type='submit' value='Buscar'>
+</form>
+<?php
 echo "<h4>Mostrando dados de $dataInicialFormatada até $dataFinalFormatada</h4>";
 
 echo "</div>";
@@ -293,9 +288,9 @@ $fld [$i] = $rs->Fields ( $i );
 
 $qtdProducaoINJTR	= $fld [0]->value;
 $pesoProducaoINJTR	= $fld [1]->value;
-
-echo "</tr></table>";
 ?>
+</tr></table>
+
 <div class='well'>
 <h3>Indicadores Gerais da Pradolux</h3>
 <div class='panel panel-default'>
