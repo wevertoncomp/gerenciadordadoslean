@@ -8,35 +8,32 @@
 </style> 
 
 
-<?php
-$conn->open ( $connStr );
-echo "<div class='well'>";
-echo "<h4>Relação Produto/Embalagem</h4><hr>";
-echo "</div>";
+<?php $conn->open ( $connStr ); ?>
+<div class='well'>
+	<h4>Relação Produto/Embalagem</h4>
+	<hr>
+</div>
 
-
-
-
-	echo "<div class='well'>";
-	
-	echo "<table class='table table-hover'>";
-	echo "<tr>";
-	echo "<th>Produto</th>";
-	echo "<th>Qtd. Emb.</th>";
-	echo "<th>Caixa Produto</th>";
-	echo "<th>Caixa Estrut.</th>";
-	echo "<th>Local</th>";
-	echo "<th>Saquinho</th>";
-	echo "<th>Descrição Saquinho</th>";
-	echo "<th>Local Kanban</th>";
-	echo "<th>VD</th>";
-	echo "<th>AM</th>";
-	echo "<th>VM</th>";
-	echo "<th>Por Kanban</th>";
-	echo "<th>Total</th>";
-	echo "<th>Caixas</th>";
-	echo "</tr>";
-	
+<div class='well'>
+	<table class='table table-hover'>
+		<tr>
+			<th>Produto</th>
+			<th>Qtd. Emb.</th>
+			<th>Caixa Produto</th>
+			<th>Caixa Estrut.</th>
+			<th>Local</th>
+			<th>Saquinho</th>
+			<th>Descrição Saquinho</th>
+			<th>Local Kanban</th>
+			<th>VD</th>
+			<th>AM</th>
+			<th>VM</th>
+			<th>Por Kanban</th>
+			<th>Total</th>
+			<th>Caixas</th>
+		</tr>
+		
+<?php	
 	$retornaSQL = "SELECT RTRIM(B1.B1_COD),
 					RTRIM(B1.B1_QE),
 					RTRIM(B5.B5_EMB1),
@@ -137,20 +134,20 @@ echo "</div>";
  		$caixaEstrutura = substr($caixaEstrutura, 4, 12);
 		
 		echo "<tr>";
-		echo "<td>$codigoProduto</td>";
-		echo "<td>$qtdEmbalagem</td>";
-		echo "<td align = 'left'>$caixaProduto</td>";
-		echo "<td bgcolor = '$corCaixa'>$caixaEstrutura</td>";
-		echo "<td>$armazem</td>";
-		echo "<td bgcolor = '$corSaquinho'>$codigoSaquinho</td>";
-		echo "<td bgcolor = '$corSaquinho'>$descricaoSaquinho</td>";
-		echo "<td bgcolor = '$corVerificacaoKanban'>$localKanban</td>";
-		echo "<td>$kanbanVD</td>";
-		echo "<td>$kanbanAM</td>";
-		echo "<td>$kanbanVM</td>";
-		echo "<td>$qtdPorKanban</td>";
-		echo "<td>$total</td>";
-		echo "<td bgcolor = '$corCaixasNecessarias'>$caixasNecessarias</td>";
+		echo "	<td>$codigoProduto</td>";
+		echo "	<td>$qtdEmbalagem</td>";
+		echo "	<td align = 'left'>$caixaProduto</td>";
+		echo "	<td bgcolor = '$corCaixa'>$caixaEstrutura</td>";
+		echo "	<td>$armazem</td>";
+		echo "	<td bgcolor = '$corSaquinho'>$codigoSaquinho</td>";
+		echo "	<td bgcolor = '$corSaquinho'>$descricaoSaquinho</td>";
+		echo "	<td bgcolor = '$corVerificacaoKanban'>$localKanban</td>";
+		echo "	<td>$kanbanVD</td>";
+		echo "	<td>$kanbanAM</td>";
+		echo "	<td>$kanbanVM</td>";
+		echo "	<td>$qtdPorKanban</td>";
+		echo "	<td>$total</td>";
+		echo "	<td bgcolor = '$corCaixasNecessarias'>$caixasNecessarias</td>";
 		echo "</tr>";
 		$rs->MoveNext ();
 	}
@@ -160,7 +157,6 @@ echo "</div>";
 
 $rs->Close ();
 $rs = null;
-
 
 $conn->Close ();
 $conn = null;
