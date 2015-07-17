@@ -1,0 +1,1 @@
+Gerenciador de dados interno para uso com banco de dados Sql Server e Protheus desenvolvido exclusivamente para banco de dados da empresa
