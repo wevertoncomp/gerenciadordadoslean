@@ -7,27 +7,27 @@ $localProducao = 'MO2-TR';
 $produtividadeMedia = 0.6;
 $faltaTotaldePecas = 0;
 $acrescimoDias = 0;
-$diaSemana = date('D');
+$diaSemana = date ( 'D' );
 
 if ($diaSemana == "Thu") {
 	$acrescimoDiasDataPosterior = 0;
 	$acrescimoDiasData2DiasPosterior = 2;
 } else if ($diaSemana == "Fri") {
+	$acrescimoDiasDataPosterior = 2;
 	$acrescimoDiasData2DiasPosterior = 2;
 }
 
-
 // Funções
-function imprimeCabecalho(){
+function imprimeCabecalho() {
 	echo "<th><button type='button' class='btn btn-default btn-xs'>Código</button></th>";
 	echo "<th><button type='button' class='btn btn-primary btn-xs'>V</button></th>";
 	echo "<th><button type='button' class='btn btn-success btn-xs'>R</button></th>";
 	echo "<th><button type='button' class='btn btn-info btn-xs'>E</button></th>";
 	echo "<th><button type='button' class='btn btn-danger btn-xs'>F</button></th>";
 	echo "<th><button type='button' class='btn btn-warning btn-xs'>T</button></th>";
-	echo "<th><button type='button' class='btn btn-success btn-xs'>PMi</button></th>";
+	echo "<th><button type='button' class='btn btn-danger btn-xs'>PMi</button></th>";
 	echo "<th><button type='button' class='btn btn-warning btn-xs'>PI</button></th>";
-	echo "<th><button type='button' class='btn btn-danger btn-xs'>PMa</button></th>";
+	echo "<th><button type='button' class='btn btn-success btn-xs'>PMa</button></th>";
 	echo "<th><button type='button' class='btn btn-default btn-xs'>OP</button></th>";
 	echo "<th><button type='button' class='btn btn-default btn-xs'>QOP</button></th>";
 	echo "<th><button type='button' class='btn btn-default btn-xs'>TNF</button></th>";
@@ -53,11 +53,11 @@ th,td,tr {
 	<button type='button' class='btn btn-danger btn-xs'>F - Faltante</button>
 	<button type='button' class='btn btn-warning btn-xs'>T - Área de
 		trânsito</button>
-	<button type='button' class='btn btn-success btn-xs'>PMi - Produção
+	<button type='button' class='btn btn-danger btn-xs'>PMi - Produção
 		Mínima</button>
 	<button type='button' class='btn btn-warning btn-xs'>PI - Produção
 		Ideal</button>
-	<button type='button' class='btn btn-danger btn-xs'>PMa - Produção
+	<button type='button' class='btn btn-success btn-xs'>PMa - Produção
 		Máxima</button>
 	<button type='button' class='btn btn-default btn-xs'>OP - Ordem de
 		Produção</button>
@@ -65,10 +65,14 @@ th,td,tr {
 		da OP</button>
 	<button type='button' class='btn btn-default btn-xs'>TNF - Tempo Necessário para produzir faltantes, em minutos, com produtividade de <?php echo $produtividadeMedia*100;?> %</button>
 	<button type='button' class='btn btn-default btn-xs'>TNPMi - Tempo Necessário para produção mínima, em minutos, com produtividade de <?php echo $produtividadeMedia*100;?> %</button>
-	<button type='button' class='btn btn-primary btn-xs'>Em - Empenhado pela Ordem de Produção</button>
-	<button type='button' class='btn btn-success btn-xs'>Es - Estoque na área de entrada da área</button>
-	<button type='button' class='btn btn-info btn-xs'>B - Balanço do estoque</button>
-	<button type='button' class='btn btn-danger btn-xs'>Forn - Fornecedor interno</button>
+	<button type='button' class='btn btn-primary btn-xs'>Em - Empenhado
+		pela Ordem de Produção</button>
+	<button type='button' class='btn btn-success btn-xs'>Es - Estoque na
+		área de entrada da área</button>
+	<button type='button' class='btn btn-info btn-xs'>B - Balanço do
+		estoque</button>
+	<button type='button' class='btn btn-danger btn-xs'>Forn - Fornecedor
+		interno</button>
 </div>
 
 
@@ -85,6 +89,7 @@ th,td,tr {
 					</tr>
 			
 <?php
+//ob_start();
 $retornaSQL = "				SELECT  convert(VARCHAR, convert(DATE, C5.C5_FECENT, 103), 103) AS DataPrevista,
 							        RTRIM(C6.C6_PRODUTO) AS Produto,
 							        SUM(C6.C6_QTDVEN) AS QtdVendida,
@@ -168,26 +173,28 @@ while ( ! $rs->EOF ) {
 	$tempoNecessarioFaltantes = ($falta * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	$tempoNecessario = ($producaoMinima * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	
-	// Somatórios
-	$tempoNecessarioTotal += $tempoNecessario;
-	$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
-	
-	echo "<tr>";
-	// echo "<td>$data</td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
-	echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
-	echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMinima</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMaxima</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
-	echo "</tr>";
+	if ($falta > 0) {
+		// Somatórios
+		$tempoNecessarioTotal += $tempoNecessario;
+		$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
+		
+		echo "<tr>";
+		// echo "<td>$data</td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
+		echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
+		echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMinima</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMaxima</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
+		echo "</tr>";
+	}
 	$rs->MoveNext ();
 }
 
@@ -199,22 +206,25 @@ echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-info btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantesTotal, 2, ',', '.' ) . "</button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioTotal, 2, ',', '.' ) . "</button></td>";
 echo "</tr>";
 
+//$conteudo = ob_get_contents();
+//ob_get_clean();
+//echo $conteudo;
 ?>
 </table>
 			</div>
 
 
 			<div class='well'>
-				<h4>Hoje</h4>
+				<h4>Hoje - <?php echo formataData($dataAtual);?></h4>
 
 				<table class='table table-hover'>
 					<tr>
@@ -305,26 +315,28 @@ while ( ! $rs->EOF ) {
 	$tempoNecessarioFaltantes = ($falta * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	$tempoNecessario = ($producaoMinima * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	
-	// Somatórios
-	$tempoNecessarioTotal += $tempoNecessario;
-	$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
-	
-	echo "<tr>";
-	// echo "<td>$data</td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
-	echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
-	echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMinima</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMaxima</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
-	echo "</tr>";
+	if ($falta > 0) {
+		// Somatórios
+		$tempoNecessarioTotal += $tempoNecessario;
+		$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
+		
+		echo "<tr>";
+		// echo "<td>$data</td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
+		echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
+		echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMinima</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMaxima</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
+		echo "</tr>";
+	}
 	$rs->MoveNext ();
 }
 
@@ -336,9 +348,9 @@ echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-info btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantesTotal, 2, ',', '.' ) . "</button></td>";
@@ -361,7 +373,7 @@ echo "</tr>";
 		<div class="col">
 			<div class='well'>
 			<?php $dataPosterior = $dataAtual + 1 + $acrescimoDiasDataPosterior; ?>
-				<h4>Amanhã - <?php echo $dataPosterior;?></h4>
+				<h4>Próximo dia útil - <?php echo formataData($dataPosterior);?></h4>
 
 				<table class='table table-hover'>
 					<tr>
@@ -451,26 +463,28 @@ while ( ! $rs->EOF ) {
 	$tempoNecessarioFaltantes = ($falta * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	$tempoNecessario = ($producaoMinima * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	
-	// Somatórios
-	$tempoNecessarioTotal += $tempoNecessario;
-	$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
-	
-	echo "<tr>";
-	// echo "<td>$data</td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
-	echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
-	echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMinima</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMaxima</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
-	echo "</tr>";
+	if ($falta > 0) {
+		// Somatórios
+		$tempoNecessarioTotal += $tempoNecessario;
+		$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
+		
+		echo "<tr>";
+		// echo "<td>$data</td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$codigo</button></td>";
+		echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
+		echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMinima</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMaxima</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
+		echo "</tr>";
+	}
 	$rs->MoveNext ();
 }
 
@@ -482,9 +496,9 @@ echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-info btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantesTotal, 2, ',', '.' ) . "</button></td>";
@@ -500,7 +514,7 @@ echo "</tr>";
 
 			<div class='well'>
 			<?php $dataPosterior2Dias = $dataAtual + 2 + $acrescimoDiasData2DiasPosterior;?>
-				<h4>2 dias à frente - <?php echo $dataPosterior2Dias;?></h4>
+				<h4>2 dias úteis à frente - <?php echo formataData($dataPosterior2Dias);?></h4>
 
 				<table class='table table-hover'>
 					<tr>
@@ -592,26 +606,28 @@ while ( ! $rs->EOF ) {
 	$tempoNecessarioFaltantes = ($falta * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	$tempoNecessario = ($producaoMinima * $tempoProducaoUnitario) / 60 / $produtividadeMedia;
 	
-	// Somatórios
-	$tempoNecessarioTotal += $tempoNecessario;
-	$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
-	
-	echo "<tr>";
-	// echo "<td>$data</td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs' title='$descricao'>$codigo</button></td>";
-	echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
-	echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
-	echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMinima</button></td>";
-	echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
-	echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMaxima</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
-	echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
-	echo "</tr>";
+	if ($falta > 0) {
+		// Somatórios
+		$tempoNecessarioTotal += $tempoNecessario;
+		$tempoNecessarioFaltantesTotal += $tempoNecessarioFaltantes;
+		
+		echo "<tr>";
+		// echo "<td>$data</td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs' title='$descricao'>$codigo</button></td>";
+		echo "<td><button type='button' class='btn btn-primary btn-xs'>$qtdVendida</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$qtdReservada</button></td>";
+		echo "<td><button type='button' class='btn btn-info btn-xs'>$estoque</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$falta</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$transito</button></td>";
+		echo "<td><button type='button' class='btn btn-danger btn-xs'>$producaoMinima</button></td>";
+		echo "<td><button type='button' class='btn btn-warning btn-xs'>$producaoIdeal</button></td>";
+		echo "<td><button type='button' class='btn btn-success btn-xs'>$producaoMaxima</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$op</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>$quantidadeOP</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantes, 2, ',', '.' ) . "</button></td>";
+		echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessario, 2, ',', '.' ) . "</button></td>";
+		echo "</tr>";
+	}
 	$rs->MoveNext ();
 }
 
@@ -623,9 +639,9 @@ echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-info btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
-echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-danger btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-warning btn-xs'></button></td>";
+echo "<td><button type='button' class='btn btn-success btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'></button></td>";
 echo "<td><button type='button' class='btn btn-default btn-xs'>" . number_format ( $tempoNecessarioFaltantesTotal, 2, ',', '.' ) . "</button></td>";
@@ -823,7 +839,8 @@ while ( ! $rs->EOF ) {
 							// while ( ! $rs->EOF ) {
 							
 							$mediaHorasSetor = $fld [0]->value;
-							echo number_format($mediaHorasSetor, 2, ',', '.')." horas";
+							echo number_format ( $mediaHorasSetor, 2, ',', '.' ) . " horas<br />";
+							echo number_format ( $mediaHorasSetor * 60, 2, ',', '.' ) . " minutos";
 							$rs->MoveNext ();
 							// }
 							
